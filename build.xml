@@ -1,0 +1,47 @@
+<project name="RapidMiner_Plugin_AnomalyDetection">
+	<description>Build file for the RapidMiner Anomaly Detection extension</description>
+
+	<property name="rm.dir" location="../RapidMiner_Vega" />
+
+	<property name="build.build" location="build" />
+	<property name="build.resources" location="resources" />
+	<property name="build.lib" location="lib" />
+
+	<property name="check.sources" location = "src" />
+	
+	<property name="javadoc.targetDir" location="javadoc" />
+
+	<property name="extension.name" value="Anomaly Detection" />
+	<property name="extension.name.long" value="RapidMiner Anomaly Detection Extension" />
+	<property name="extension.namespace" value="anomalydetection" />
+    <property name="extension.vendor" value="German Research Center for Artificial Intelligence (DFKI GmbH)" />
+    <property name="extension.admin" value="Markus Goldstein" />
+    <property name="extension.url" value="http://madm.dfki.de/rapidminer/anomalydetection" />
+
+	<property name="extension.needsVersion" value="5.0" />
+	<property name="extension.dependencies" value="" />
+
+	<property name="extension.initClass" value=" de.dfki.madm.anomalydetection.PlugInitAnomalyDetection" />
+	<property name="extension.objectDefinition" value="/com/rapidminer/resources/ioobjectsAnomalyDetection.xml" />
+	<property name="extension.operatorDefinition" value="/com/rapidminer/resources/OperatorsAnomalyDetection.xml" />
+	<property name="extension.parseRuleDefinition" value="/com/rapidminer/resources/parserulesAnomalyDetection.xml" />
+	<property name="extension.groupProperties" value="/com/rapidminer/resources/groupsAnomalyDetection.properties" />
+	<property name="extension.errorDescription" value="/com/rapidminer/resources/i18n/ErrorsAnomalyDetection.properties" />
+	<property name="extension.userErrors" value="/com/rapidminer/resources/i18n/UserErrorMessagesAnomalyDetection.properties" />
+	<property name="extension.guiDescription" value="/com/rapidminer/resources/i18n/GUIAnomalyDetection.properties" />
+
+
+	<!-- Src files -->
+	<path id="build.sources.path">
+		<dirset dir="src">
+			<include name="**" />
+		</dirset>
+	</path>
+	<fileset dir="src" id="build.sources">
+		<include name="**/*.java" />
+	</fileset>
+	<fileset id="build.dependentExtensions" dir="..">
+	</fileset>
+
+	<import file="${rm.dir}/build_extension.xml" />
+</project>
