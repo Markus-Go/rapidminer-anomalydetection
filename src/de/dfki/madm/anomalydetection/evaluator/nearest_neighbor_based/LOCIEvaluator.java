@@ -135,10 +135,10 @@ public class LOCIEvaluator implements Evaluator {
 
 				
 				
-				double summationNPRALpha = 0.0 + nPRAlpha;
+				double summationNPRALpha = 0.0;
 				// this is the loop I should try to vanish 
 				for (int k = 0; k <= j; k++) {
-					int index = criticalDistances[i][j].index;
+					int index = criticalDistances[i][k].index;
 					if (index == -1)
 						continue;
 					int currentNRPAlpa = find(0, secondDimension, alphaR,
@@ -148,15 +148,15 @@ public class LOCIEvaluator implements Evaluator {
 				}                                                                                                                                                                                                                                          
 				double nHatPRAlpha = summationNPRALpha * 1.0 / nPR;
 				
-				int squaredNPRAlpha = nPRAlpha * nPRAlpha;
+				double squaredNPRAlpha = 0.0;
 				
 				for (int k = 0; k <= j; k++) {
-					int index = criticalDistances[i][j].index;
+					int index = criticalDistances[i][k].index;
 					if (index == -1)
 						continue;
 					int currentNRPAlpa = find(0, secondDimension, alphaR,
 							criticalDistances[index]);
-					double delta = currentNRPAlpa- nHatPRAlpha;
+					double delta = currentNRPAlpa - nHatPRAlpha;
 					
 					squaredNPRAlpha += delta*delta;
 					
