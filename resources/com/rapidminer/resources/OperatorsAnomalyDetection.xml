@@ -29,23 +29,31 @@
 		</operator>
 		
 		<operator>
+			<key>approximate Local Correlation Integral (aLOCI)</key>
+			<class>de.dfki.madm.anomalydetection.operator.nearest_neighbor_based.ALOCIAnomalyDetectionOperator
+			</class>
+		</operator>
+		
+		<operator>
 			<key>Local Outlier Probablity (LoOP)</key>
 			<class> 		de.dfki.madm.anomalydetection.operator.nearest_neighbor_based.LoOPAnomalyDetectionOperator
 			</class>
 		</operator>
+		
 		<operator>
 			<key>Influenced Outlierness (INFLO)</key>
 			<class> 		de.dfki.madm.anomalydetection.operator.nearest_neighbor_based.INFLOAnomalyDetectionOperator
 			</class>
 		</operator>
-		
 	</group>
+
 	<group key ="clustering_based" >
-        <operator>
-            <key>Cluster-Based Local Outlier Factor (CBLOF)</key>
-            <class>         de.dfki.madm.anomalydetection.operator.cluster_based.CBLOFAnomalyDetectionOperator
-            </class>
-        </operator>	
+		<operator>
+			<key>Cluster-Based Local Outlier Factor (CBLOF)</key>
+			<class> 		de.dfki.madm.anomalydetection.operator.cluster_based.CBLOFAnomalyDetectionOperator
+			</class>
+		</operator>
+		
 		<operator>
 			<key>Local Density Cluster-Based Outlier Factor (LDCOF)</key>
 			<class> 		de.dfki.madm.anomalydetection.operator.cluster_based.LDCOFAnomalyDetectionOperator
@@ -55,4 +63,6 @@
    </group>
    </group>
 
+
+   
 </operators>

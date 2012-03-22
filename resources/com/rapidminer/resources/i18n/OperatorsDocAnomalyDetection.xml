@@ -80,13 +80,25 @@ The original publication suggests the following flagging scheme the object shoul
 </p> 
 		</help>
 	</operator>
+
+<operator>
+		<name>approximate Local Correlation Integral (aLOCI)</name>
+	   	<synopsis>Calculates the max outlier score based on The approximate Local Correlation Integral (aLOCI), proposed by Papadimitriou et al [2003].</synopsis>
+		<help>
+		This algorithm is an approximation to Local Correlation Integer (LOCI) proposed by Papadimitriou et al [2003]. aLOCI provides an automatic statistically intuitive cut off to determine the outliers.
+		The algorithm calculates MDEF and &#x3C3;MDEF for all objects, the outlier score assigned to each object is the maximum ratio between MDEF and &#x3C3;MDEF. To estimate MDEF and &#x3C3;MDEF in a faster way than LOCI,
+		the algorithm uses box counting, using quadtrees the objects in the same cell are considerd neighbors for radius equals to the diameter of the cell.
+		</help>
+</operator>
+
+<operator>
+		<name>Local Density Cluster-Based Outlier Factor (LDCOF)</name>
+		<synopsis>Assigns the outlier score according to LDCOF algorithm </synopsis>
+		<help>
+		This is a local density based anomaly detecion algorithm. 
+		The anomaly score is set to the distance to the nearest large cluster divided by the average cluster distance of the large cluster. The intuition behind this is that the small clusters are considered outlying and thus they are assigned to the nearest large cluster and this becomes its local neighborhood. The division into large and small clusters can be either done similar to what was implemented in the CBLOF paper (He et al,2003) or it can done in a manner similar to what was proposed in (Moh&#39;d Belal Al- Zoubi,2009). This is determined by the parameter &quot; divide clusters like cblof &quot;. 
+		</help>
+</operator>
 	
-    <operator>
-        <name>Local Density Cluster-Based Outlier Factor (LDCOF)</name>
-        <synopsis>Assigns the outlier score according to LDCOF algorithm </synopsis>
-        <help>
-        This is a local density based anomaly detecion algorithm. 
-        The anomaly score is set to the distance to the nearest large cluster divided by the average cluster distance of the large cluster. The intuition behind this is that the small clusters are considered outlying and thus they are assigned to the nearest large cluster and this becomes its local neighborhood. The division into large and small clusters can be either done similar to what was implemented in the CBLOF paper (He et al,2003) or it can done in a manner similar to what was proposed in (Moh&#39;d Belal Al- Zoubi,2009). This is determined by the parameter &quot; divide clusters like cblof &quot;. 
-        </help>
-    </operator>
+
 </operatorHelp>
