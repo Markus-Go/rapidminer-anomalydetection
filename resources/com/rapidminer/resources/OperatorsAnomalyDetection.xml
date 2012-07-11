@@ -1,68 +1,74 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <operators name="anomalydetection" version="5.0" docbundle="com/rapidminer/resources/i18n/OperatorsDocAnomalyDetection">
-   <group key="">
-      <group key ="anomaly_detection" >
+<group key="">
+	<group key ="anomaly_detection" >
 	<icon>table_new.png</icon>
 		
-	<group key ="nearest_neighbor_based" >
-		<operator>
-			<key>k-NN Global Anomaly Score</key>
-			<class> 		de.dfki.madm.anomalydetection.operator.nearest_neighbor_based.KNNAnomalyDetectionOperator
-			</class>
-		</operator>
-
-		<operator>
-			<key>Local Outlier Factor (LOF)</key>
-			<class> 		de.dfki.madm.anomalydetection.operator.nearest_neighbor_based.LOFAnomalyDetectionOperator
-			</class>
-		</operator>
-		<operator>
-			<key>Connectivity-Based Outlier Factor (COF)</key>
-			<class> 		de.dfki.madm.anomalydetection.operator.nearest_neighbor_based.COFAnomalyDetectionOperator
-			</class>
-		</operator>
-
-		<operator>
-			<key>Local Correlation Integeral (LOCI)</key>
-			<class> 		de.dfki.madm.anomalydetection.operator.nearest_neighbor_based.LOCIAnomalyDetectionOperator
-			</class>
-		</operator>
+		<group key ="nearest_neighbor_based" >
+			<operator>
+				<key>k-NN Global Anomaly Score</key>
+				<class> 		de.dfki.madm.anomalydetection.operator.nearest_neighbor_based.KNNAnomalyDetectionOperator
+				</class>
+			</operator>
+	
+			<operator>
+				<key>Local Outlier Factor (LOF)</key>
+				<class> 		de.dfki.madm.anomalydetection.operator.nearest_neighbor_based.LOFAnomalyDetectionOperator
+				</class>
+			</operator>
+			<operator>
+				<key>Connectivity-Based Outlier Factor (COF)</key>
+				<class> 		de.dfki.madm.anomalydetection.operator.nearest_neighbor_based.COFAnomalyDetectionOperator
+				</class>
+			</operator>
+	
+			<operator>
+				<key>Local Correlation Integeral (LOCI)</key>
+				<class> 		de.dfki.madm.anomalydetection.operator.nearest_neighbor_based.LOCIAnomalyDetectionOperator
+				</class>
+			</operator>
+			
+			<operator>
+				<key>approximate Local Correlation Integral (aLOCI)</key>
+				<class>de.dfki.madm.anomalydetection.operator.nearest_neighbor_based.ALOCIAnomalyDetectionOperator
+				</class>
+			</operator>
+			
+			<operator>
+				<key>Local Outlier Probablity (LoOP)</key>
+				<class> 		de.dfki.madm.anomalydetection.operator.nearest_neighbor_based.LoOPAnomalyDetectionOperator
+				</class>
+			</operator>
+			
+			<operator>
+				<key>Influenced Outlierness (INFLO)</key>
+				<class> 		de.dfki.madm.anomalydetection.operator.nearest_neighbor_based.INFLOAnomalyDetectionOperator
+				</class>
+			</operator>
+		</group>
+	
+		<group key ="clustering_based" >
+			<operator>
+				<key>Cluster-Based Local Outlier Factor (CBLOF)</key>
+				<class> 		de.dfki.madm.anomalydetection.operator.cluster_based.CBLOFAnomalyDetectionOperator
+				</class>
+			</operator>
+			
+			<operator>
+				<key>Local Density Cluster-Based Outlier Factor (LDCOF)</key>
+				<class> 		de.dfki.madm.anomalydetection.operator.cluster_based.LDCOFAnomalyDetectionOperator
+				</class>
+			</operator>
+		</group>
 		
-		<operator>
-			<key>approximate Local Correlation Integral (aLOCI)</key>
-			<class>de.dfki.madm.anomalydetection.operator.nearest_neighbor_based.ALOCIAnomalyDetectionOperator
-			</class>
-		</operator>
+		<group key ="statistical_based" >
+			<operator>
+				<key>Histogram-based Outlier Score (HBOS)</key>
+				<class> 		de.dfki.madm.anomalydetection.operator.statistical_based.HistogramOperator
+				</class>
+			</operator>
+		</group>
 		
-		<operator>
-			<key>Local Outlier Probablity (LoOP)</key>
-			<class> 		de.dfki.madm.anomalydetection.operator.nearest_neighbor_based.LoOPAnomalyDetectionOperator
-			</class>
-		</operator>
-		
-		<operator>
-			<key>Influenced Outlierness (INFLO)</key>
-			<class> 		de.dfki.madm.anomalydetection.operator.nearest_neighbor_based.INFLOAnomalyDetectionOperator
-			</class>
-		</operator>
 	</group>
-
-	<group key ="clustering_based" >
-		<operator>
-			<key>Cluster-Based Local Outlier Factor (CBLOF)</key>
-			<class> 		de.dfki.madm.anomalydetection.operator.cluster_based.CBLOFAnomalyDetectionOperator
-			</class>
-		</operator>
-		
-		<operator>
-			<key>Local Density Cluster-Based Outlier Factor (LDCOF)</key>
-			<class> 		de.dfki.madm.anomalydetection.operator.cluster_based.LDCOFAnomalyDetectionOperator
-			</class>
-		</operator>
-	</group>
-   </group>
-   </group>
-
-
-   
+</group>
 </operators>
