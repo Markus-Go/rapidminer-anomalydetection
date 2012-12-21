@@ -67,7 +67,7 @@ public abstract class AbstractNearestNeighborBasedAnomalyDetectionOperator
 
 	@Override
 	public void doWork() throws OperatorException {
-		ExampleSet exampleSet = getExampleSetInput().getData();
+		ExampleSet exampleSet = getExampleSetInput().getData(ExampleSet.class);
 		this.logNote(getName());
 		int type = DataRowFactory.TYPE_DOUBLE_ARRAY;
 		if (exampleSet.getExampleTable() instanceof MemoryExampleTable) {

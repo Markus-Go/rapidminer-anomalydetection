@@ -21,7 +21,6 @@ package de.dfki.madm.anomalydetection.evaluator.nearest_neighbor_based;
 
 import java.util.LinkedList;
 
-
 /**
  * 
  * This class contains all the information for the nearest neighborhood set of

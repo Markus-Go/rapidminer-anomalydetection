@@ -1,7 +1,7 @@
 <project name="RapidMiner_Plugin_AnomalyDetection">
 	<description>Build file for the RapidMiner Anomaly Detection extension</description>
 
-	<property name="rm.dir" location="../RapidMiner_Vega" />
+	<property name="rm.dir" location="../RapidMiner_Unuk" />
 
 	<property name="build.build" location="build" />
 	<property name="build.resources" location="resources" />

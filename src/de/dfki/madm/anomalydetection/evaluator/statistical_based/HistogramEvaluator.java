@@ -19,13 +19,6 @@
  */
 package de.dfki.madm.anomalydetection.evaluator.statistical_based;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -51,6 +44,7 @@ public class HistogramEvaluator {
 		this.logger = logger;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public ExampleSet evaluate (ExampleSet exampleSet, boolean log_scale, boolean ranked, HashMap<String,Integer> bin_info_help, HashMap<String,String> mode_help) {
 	
 		if(ranked) {
@@ -212,7 +206,7 @@ public class HistogramEvaluator {
 		Attribute score = AttributeFactory.createAttribute("score",Ontology.REAL);
 		exampleSet.getExampleTable().addAttribute(score);
         exampleSet.getAttributes().setOutlier(score);
-        int count_test = 1;
+        // int count_test = 1;
 		for (Example example : exampleSet) {
 			value = 1.0;
 			if(log_scale) {
@@ -238,7 +232,7 @@ public class HistogramEvaluator {
 				}
 			}
 			example.setValue(score,value);
-			count_test++;
+			// count_test++;
 		}  
 		return exampleSet;
 	}

@@ -45,7 +45,7 @@ import de.dfki.madm.anomalydetection.evaluator.cluster_based.CBLOFEvaluator;
  * 
  * Use weighting for outlier factor based on the sizes of the clusters as
  * proposed in the original publication. Since this might lead to unexpected
- * behaviour (outliers close to small clusters are not found), it can be
+ * behavior (outliers close to small clusters are not found), it can be
  * disabled and outliers scores are solely computed based on their distance to
  * the cluster center.
  * 

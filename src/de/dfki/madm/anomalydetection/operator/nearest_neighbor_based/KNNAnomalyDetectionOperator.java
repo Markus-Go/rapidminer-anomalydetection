@@ -66,8 +66,7 @@ public class KNNAnomalyDetectionOperator extends
 	public static final String PARAMETER_PARALLELIZE_EVALUATION_PROCESS = "parallelize evaluation process";
 	
 	
-	private DistanceMeasureHelper measureHelper = new DistanceMeasureHelper(
-			this);
+	private DistanceMeasureHelper measureHelper = new DistanceMeasureHelper(this);
 
 	public KNNAnomalyDetectionOperator(OperatorDescription description) {
 		super(description);
@@ -91,12 +90,12 @@ public class KNNAnomalyDetectionOperator extends
 			if (k >= n) {
 				this.logWarning("Setting " + KNNAnomalyDetectionOperator.PARAMETER_K + " to #Datapoints-1.");
 				k = n-1;
-				this.setParameter(KNNAnomalyDetectionOperator.PARAMETER_K, (n-1)+"");
+				this.setParameter(KNNAnomalyDetectionOperator.PARAMETER_K, (n-1) + "");
 			}
 			
 			KNNCollection knnCollection = new KNNCollection(n, k, points, weight);
 	
-			KNNEvaluator evaluator = new KNNEvaluator(knnCollection, kth, measure,parallel, numberOfThreads, this);
+			KNNEvaluator evaluator = new KNNEvaluator(knnCollection, kth, measure, parallel, numberOfThreads, this);
 			ret = evaluator.evaluate();
 		}
 		

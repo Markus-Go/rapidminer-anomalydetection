@@ -82,7 +82,8 @@ public class LDCOFAnomalyDetectionOperator extends
 			evaluator = new LDCOFEvaluator(percentage, measure, points,
 					belongsToCluster, centroids, clusterSize);
 		}
-		return evaluator.evaluate();
+		double[] e = evaluator.evaluate();		
+		return e;
 
 	}
 

@@ -19,10 +19,8 @@
  */
 package de.dfki.madm.anomalydetection.evaluator.nearest_neighbor_based;
 
-
 import java.util.LinkedList;
 
-//import com.rapidminer.operator.anomaly_detection.DynamicArray;
 import com.rapidminer.operator.Operator;
 import com.rapidminer.tools.math.similarity.DistanceMeasure;
 /**

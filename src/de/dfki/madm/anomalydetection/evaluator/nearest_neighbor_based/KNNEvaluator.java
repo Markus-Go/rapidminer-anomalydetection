@@ -56,7 +56,8 @@ public class KNNEvaluator implements Evaluator {
 
 		@Override
 		public void run() {
-			this.logger.logNote("Thread " + start + " " + end + " started!");
+			if (logger != null)
+				this.logger.logNote("Thread " + start + " " + end + " started!");
 			for (int i = start; i < end; i++) {
 				for (int j = 0; j < n; j++) {
 					if (i == j)
@@ -72,7 +73,8 @@ public class KNNEvaluator implements Evaluator {
 						knnCollection.getNumberOfNeighborsSoFar()[i]);
 
 			}
-			logger.logNote("Thread " + start + " " + end + " finished!");
+			if (logger != null)
+				logger.logNote("Thread " + start + " " + end + " finished!");
 			try {
 				barrier.await();
 			} catch (InterruptedException e) {
@@ -106,7 +108,8 @@ public class KNNEvaluator implements Evaluator {
 
 		@Override
 		public void run() {
-			logger.logNote("Thread " + start + " " + end + " started!");
+			if (logger != null)
+				logger.logNote("Thread " + start + " " + end + " started!");
 			for (int i = start; i <= end; i++) {
 				for (int j = 0; j < i; j++) {
 
@@ -124,7 +127,8 @@ public class KNNEvaluator implements Evaluator {
 				}
 
 			}
-			logger.logNote("Thread " + start + " " + end + " finished!");
+			if (logger != null)
+				logger.logNote("Thread " + start + " " + end + " finished!");
 			try {
 				barrier.await();
 			} catch (InterruptedException e) {
@@ -173,7 +177,8 @@ public class KNNEvaluator implements Evaluator {
 			KNNParallel();
 		else
 			KNNSeq();
-		logger.logNote("Time " + (System.currentTimeMillis() - start));
+		if (logger != null)
+			logger.logNote("Time " + (System.currentTimeMillis() - start));
 		return res;
 	}
 

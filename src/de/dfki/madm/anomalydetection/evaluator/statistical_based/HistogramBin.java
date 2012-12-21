@@ -19,7 +19,7 @@
  */
 package de.dfki.madm.anomalydetection.evaluator.statistical_based;
 
-public class HistogramBin implements Comparable {
+public class HistogramBin implements Comparable<HistogramBin> {
 	private double range_from;
 	private double range_to;
 	private int quantity;
@@ -124,8 +124,7 @@ public class HistogramBin implements Comparable {
 	}
 
 	@Override
-	public int compareTo(Object o) {
-		HistogramBin sort = (HistogramBin) o;
+	public int compareTo(HistogramBin sort) {
 			if(this.score < sort.get_score()){
 				return -1;
 			}

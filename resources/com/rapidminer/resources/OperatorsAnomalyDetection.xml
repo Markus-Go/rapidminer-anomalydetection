@@ -59,12 +59,26 @@
 				<class> 		de.dfki.madm.anomalydetection.operator.cluster_based.LDCOFAnomalyDetectionOperator
 				</class>
 			</operator>
+			
+			<operator>
+				<key>Clustering-based Multivariate Gaussian Outlier Score (CMGOS)</key>
+				<class> 		de.dfki.madm.anomalydetection.operator.cluster_based.CMGOSAnomalyDetectionOperator
+				</class>
+			</operator>
 		</group>
 		
 		<group key ="statistical_based" >
 			<operator>
 				<key>Histogram-based Outlier Score (HBOS)</key>
 				<class> 		de.dfki.madm.anomalydetection.operator.statistical_based.HistogramOperator
+				</class>
+			</operator>
+		</group>
+		
+		<group key ="performance" >
+			<operator>
+				<key>Generate ROC</key>
+				<class>		de.dfki.madm.anomalydetection.operator.evaluation.ROCOperator
 				</class>
 			</operator>
 		</group>

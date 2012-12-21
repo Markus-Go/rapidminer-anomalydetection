@@ -25,7 +25,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Vector;
 
-import com.rapidminer.example.Attributes;
 import com.rapidminer.example.ExampleSet;
 import com.rapidminer.operator.Operator;
 import com.rapidminer.operator.OperatorDescription;
@@ -41,15 +40,11 @@ import com.rapidminer.parameter.MetaDataProvider;
 import com.rapidminer.parameter.ParameterType;
 import com.rapidminer.parameter.ParameterTypeAttribute;
 import com.rapidminer.parameter.ParameterTypeBoolean;
-import com.rapidminer.parameter.ParameterTypeCategory;
-import com.rapidminer.parameter.ParameterTypeInt;
 import com.rapidminer.parameter.ParameterTypeList;
 import com.rapidminer.parameter.ParameterTypeString;
 import com.rapidminer.parameter.ParameterTypeStringCategory;
 import com.rapidminer.parameter.ParameterTypeTupel;
-import com.rapidminer.parameter.UndefinedParameterError;
 import com.rapidminer.parameter.conditions.BooleanParameterCondition;
-import com.rapidminer.parameter.conditions.EqualStringCondition;
 
 import de.dfki.madm.anomalydetection.evaluator.statistical_based.HistogramEvaluator;
 
@@ -150,7 +145,7 @@ public class HistogramOperator extends Operator {
 	public void doWork() throws OperatorException {
 		 boolean log_scale = getParameterAsBoolean(PARAMETER_LOG_SCALE);
 		 boolean ranked = getParameterAsBoolean(PARAMETER_RANKED_MODE);
-		 ExampleSet exampleSet = exampleSetInput.getData();
+		 ExampleSet exampleSet = exampleSetInput.getData(ExampleSet.class);
 	     List<String[]> list = getParameterList(PARAMETER_PROPERTIES_LIST);
 		 HashMap<String,Integer> bin_info = new HashMap<String,Integer>();
 		 HashMap<String,String> mode = new HashMap<String,String>();

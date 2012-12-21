@@ -49,7 +49,7 @@ import de.dfki.madm.anomalydetection.operator.AbstractAnomalyDetectionOperator;
 
 /**
  * The Abstract clustering based anomaly detection operator defines basic
- * features and behaviour for clustered based outlier detection operators.
+ * features and behavior for clustered based outlier detection operators.
  * 
  * @author Mennatallah Amer
  * 
@@ -118,7 +118,7 @@ public abstract class AbstractClusteringAnomalyDetectionOperator extends
 
 	@Override
 	public void doWork() throws OperatorException {
-		ExampleSet exampleSet = getExampleSetInput().getData();
+		ExampleSet exampleSet = getExampleSetInput().getData(ExampleSet.class);
 
 		int type = DataRowFactory.TYPE_DOUBLE_ARRAY;
 		if (exampleSet.getExampleTable() instanceof MemoryExampleTable) {
@@ -142,7 +142,7 @@ public abstract class AbstractClusteringAnomalyDetectionOperator extends
 		storeResult(resultSet, res, anomalyScore);
 		getOriginalOutput().deliver(exampleSet);
 		getExampleSetOutput().deliver(resultSet);
-		clusterModelOutput.deliver(clusterModelInput.getData());
+		clusterModelOutput.deliver(clusterModelInput.getData(ClusterModel.class));
 		
 		
 	}
@@ -160,7 +160,7 @@ public abstract class AbstractClusteringAnomalyDetectionOperator extends
 	public void preprocessing(ExampleSet exampleSet, Attributes attributes,
 			double[][] points) throws OperatorException {
 		
-		ClusterModel model = clusterModelInput.getData();
+		ClusterModel model = clusterModelInput.getData(ClusterModel.class);
 		Object[] clusters = model.getClusters().toArray();
 		int numberOfClusters = clusters.length;
 		

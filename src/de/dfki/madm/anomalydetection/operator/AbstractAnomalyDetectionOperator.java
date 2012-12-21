@@ -114,7 +114,7 @@ public abstract class AbstractAnomalyDetectionOperator extends Operator {
 	 */
 	@Override
 	public void doWork() throws OperatorException {
-		ExampleSet exampleSet = exampleSetInput.getData();
+		ExampleSet exampleSet = exampleSetInput.getData(ExampleSet.class);
 
 		int type = DataRowFactory.TYPE_DOUBLE_ARRAY;
 		if (exampleSet.getExampleTable() instanceof MemoryExampleTable) {

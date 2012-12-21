@@ -165,6 +165,55 @@
 	</operator>
 
 	<operator>
+		<name>Clustering-based Multivariate Gaussian Outlier Score (CMGOS)</name>
+	   	<synopsis>Calculates the outlier score based on a clustering result. The
+	   		outlier score of an instance depends on the probability of how likely
+	   		its distance to the cluster center is. 
+	   	</synopsis>
+		<help>
+			<p>
+			This algorithm takes as input a clustered data set and a cluster model
+			containing its centroids. Then, an outlier score is calculated on the
+			basis of the centroid and the multivariate Gaussian of the cluster.
+			Therefore, a covariance matrix of the multivariate Gaussian of each
+			cluster is computed. Since covariance matrices are sensitive to outliers,
+			different robust estimators exist, whereas this operator has  
+			different strategies: (1) Compute covariance matrix, remove outliers
+			according to expected percentage and recompute covariance matrix. 
+			Basically this could be understood as a multivariate Grubb's Test.
+			To cope with the challenge of not invertable matrices, two different
+			sub-strategies have been implemented (1a) Reduction - reduces the number
+			of dimensions by selecting only dimensions for each cluster which have
+			at least two different values and (1a) Regularization - regularizes the covariance
+			matrix with lambda (c.f. Friedman, J.H. (1989): Regularized Discriminant Analysis).
+			(3) A robust covariance estimation according to 			
+			Minimum Covariance Determinant (MCD) by Rousseeuw and Van Driessen as described in
+			&quot;A Fast Algorithm for the Minimum Covariance Determinant Estimator&quot;,
+			1999, has been implemented. Although the fastMCD was implemented, this
+		    algorithm is comparable slow.
+			</p>
+		</help>
+	</operator>
+
+	<operator>
+		<name>Generate ROC</name>
+	   	<synopsis>ROC based evaluation for unsupervised Anomaly Detection Operators</synopsis>
+		<help> <p>
+			This operator is for evaluating anomaly detection operators. The basic
+			idea is that an anomaly detection algorithm scores the records and this
+			operator sorts them by their outlier score and creates a
+			Receiver Operator Charateristic (ROC) curve using different outlier
+			thresholds. Also, the area under curve (AUC) is computed. A perfect
+			anomaly detection algorithm would perfectly separate the outliers from
+			the normal instances leading to an AUC of 1.0. If the algorithm just
+			guesses the two classes (normal or outlier), a ROC of 0.5 would be
+			the result on average. As input, this operator expects the outlier score
+			as well as the ground truth as labels.
+			</p>
+		</help>
+	</operator>
+
+	<operator>
 		<name>Local Density Cluster-Based Outlier Factor (LDCOF)</name>
 		<synopsis>Assigns the outlier score according to LDCOF algorithm</synopsis>
 		<help> <p>
