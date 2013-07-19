@@ -108,7 +108,7 @@ public class ROCEvaluator {
 			}
 			if (j != size - 1 && outliers[j].outlierScore == outliers[j + 1].outlierScore)
 				continue;
-			Area += last[1] * (falsePositive - last[0]) + 0.5 * (falsePositive - last[0]) * (truePositive - last[1]);
+			Area += last[1] * ((double)falsePositive - last[0]) + (double)0.5 * ((double)falsePositive - last[0]) * ((double)truePositive - last[1]);
 			rocPoints.add(new double[] { falsePositive, truePositive });
 			last[0] = falsePositive;
 			last[1] = truePositive;
@@ -120,7 +120,7 @@ public class ROCEvaluator {
 		if (negative == 0) {
 			throw new OperatorException("All the records are '" + outlierString + "'");
 		}
-		double totalArea = positive * negative;
+		double totalArea = (double)positive * (double)negative;
 
 		auc = Area / totalArea;
 		result = new Object[rocPoints.size()][2];
