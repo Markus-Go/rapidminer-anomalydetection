@@ -342,7 +342,7 @@ public class HistogramEvaluator {
 	public static void createStaticHistogram(ArrayList<HistogramBin>[] histogram_array, double[][] data, int first, double binWidth, int feature, double binStart){
 		HistogramBin bin = new HistogramBin(binStart,binStart+binWidth,0,0);
 		int last = first-1;
-		for(int i = first;i<data.length&&data[i][feature]<bin.get_range_to();i++) {
+		for(int i = first; i < data.length&&data[i][feature] <= bin.get_range_to(); i++) {
 			bin.add_quantity(1);
 			last = i;
 		}
