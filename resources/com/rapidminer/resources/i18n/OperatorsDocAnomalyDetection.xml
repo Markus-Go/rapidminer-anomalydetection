@@ -256,5 +256,28 @@
 	  		(ordered) histograms instead of using the bin height.
 	  		</p>
 	 	</help>
+	</operator>
+<operator>
+		<name>One-Class LIBSVM Anomaly Score</name>
+		<synopsis>Computes the outlier score using one-class SVMs</synopsis>
+		<help> <p> 
+		    One-class SVMs are a semi-supervised version of traditional Support Vector 
+		    Machines. This operator extends the semi-supervised one-class SVM such that
+		    it can be used for unsupervised anomaly detection as proposed by Amer et al. 
+		    in &quot;Enhancing One-class Support Vector Machines for Unsupervised 
+		    Anomaly Detection&quot; (ODD 2013). The implementation of the algorithm in 
+		    the operator is  based on Schoelkopf et al (2001) which attempts to separate
+		    the data from the origin using the optimal hyperplane. The decision function 
+		    outputs a positive number in case the data is on the side of the hyperplane 
+		    away from the origin, negative otherwise. To output a continuous score (Amer 
+		    et al, 2013) the score is scaled using the maximum value of the decision 
+		    function. The scaling subtracts the decision value of the point from the 
+		    maximum, then divides it by the magnitude of the maximum. This results in a
+		    score greater than 1.0 for outlying points. Two additional types of one-class
+		    SVMs are supported by the operator: robust one-class and eta one-class SVM. 
+		    Both of which are proposed by Amer et al (2013) in order to make the one-class 
+		    SVMs more robust against outliers for unsupervised anomaly detection.
+		    </p>
+		</help>
 	</operator>	
 </operatorHelp>

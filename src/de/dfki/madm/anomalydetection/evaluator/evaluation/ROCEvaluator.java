@@ -1,7 +1,7 @@
 /*
  * RapidMiner Anomaly Detection Extension
  * 
- * Copyright (C) 2009-2012 by Deutsches Forschungszentrum fuer Kuenstliche
+ * Copyright (C) 2009-2013 by Deutsches Forschungszentrum fuer Kuenstliche
  * Intelligenz GmbH or its licensors, as applicable.
  * 
  * This is free software: you can redistribute it and/or modify it under the
@@ -58,6 +58,10 @@ public class ROCEvaluator {
 		return this.normal;
 	}
 	
+	/**
+	 * The returned array has 4 columns denoting: false positive rate, 
+	 * true positive rate/recall, precision and the decision threshold   
+	 */
 	public Object[][] evaluate(String outlierString, Object[] labels, double[] res) throws OperatorException {
 		int size = res.length;
 		Object[][] result;
@@ -109,7 +113,7 @@ public class ROCEvaluator {
 			if (j != size - 1 && outliers[j].outlierScore == outliers[j + 1].outlierScore)
 				continue;
 			Area += last[1] * ((double)falsePositive - last[0]) + (double)0.5 * ((double)falsePositive - last[0]) * ((double)truePositive - last[1]);
-			rocPoints.add(new double[] { falsePositive, truePositive });
+			rocPoints.add(new double[] { falsePositive, truePositive , truePositive*1.0/(positive+negative), outliers[j].outlierScore});
 			last[0] = falsePositive;
 			last[1] = truePositive;
 
@@ -123,11 +127,13 @@ public class ROCEvaluator {
 		double totalArea = (double)positive * (double)negative;
 
 		auc = Area / totalArea;
-		result = new Object[rocPoints.size()][2];
+		result = new Object[rocPoints.size()][4];
 		int i = 0;
 		for (double[] r : rocPoints) {
 			result[i][0] = r[0] / negative;
-			result[i++][1] = r[1] / positive;
+			result[i][1] = r[1] / positive;
+			result[i][2]= r[2];
+			result[i++][3]= r[3];
 		}
 
 		return result;

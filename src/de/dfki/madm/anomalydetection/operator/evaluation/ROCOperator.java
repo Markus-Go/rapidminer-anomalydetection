@@ -1,7 +1,7 @@
 /*
  * RapidMiner Anomaly Detection Extension
  * 
- * Copyright (C) 2009-2012 by Deutsches Forschungszentrum fuer Kuenstliche
+ * Copyright (C) 2009-2013 by Deutsches Forschungszentrum fuer Kuenstliche
  * Intelligenz GmbH or its licensors, as applicable.
  * 
  * This is free software: you can redistribute it and/or modify it under the
@@ -21,6 +21,7 @@
 package de.dfki.madm.anomalydetection.operator.evaluation;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 
 import com.rapidminer.example.Attribute;
@@ -32,6 +33,7 @@ import com.rapidminer.example.table.NominalMapping;
 import com.rapidminer.operator.Operator;
 import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer.operator.OperatorException;
+import com.rapidminer.operator.ValueDouble;
 import com.rapidminer.operator.performance.MultiClassificationPerformance;
 import com.rapidminer.operator.performance.PerformanceCriterion;
 import com.rapidminer.operator.performance.PerformanceVector;
@@ -59,6 +61,7 @@ public class ROCOperator extends Operator {
 	
 	public static String PARAMETER_LABEL = "label value for outliers";
 	public double auc;
+	private PerformanceVector currentPerformanceVector =null;
 
 	private void preSetOutlierLable() throws OperatorException {
 		HashMap<Object, Integer> count = new HashMap<Object, Integer>();
@@ -85,6 +88,32 @@ public class ROCOperator extends Operator {
 			this.logNote("Outlier class " + less + " is with " + (count.get(less) / exampleSize) + "% ok");
 		}
 	}
+	/**
+     * Adds the performance criteria as plottable values
+     */
+    public void addPerformanceValue(final String name, String description) {
+        addValue(new ValueDouble(name, description) {
+            @Override
+            public double getDoubleValue() {
+                if (currentPerformanceVector == null)
+                    return Double.NaN;
+                PerformanceCriterion c = currentPerformanceVector.getCriterion(name);
+
+                if (c != null) {
+                    return c.getAverage();
+                } else {
+                    return Double.NaN;
+                }
+            }
+        });
+    }
+	private List<PerformanceCriterion> getCriteria() {
+		List<PerformanceCriterion> performanceCriteria = new LinkedList<PerformanceCriterion>();
+		performanceCriteria.add( new MultiClassificationPerformance(MultiClassificationPerformance.ACCURACY));
+		performanceCriteria.add(new ROCPerformanceVector("AUC", auc));
+		return performanceCriteria;
+	}
+
 
 	public ROCOperator(OperatorDescription description) {
 		super(description);
@@ -92,13 +121,29 @@ public class ROCOperator extends Operator {
 		getTransformer().addRule(new PassThroughOrGenerateRule(performanceInput, performanceOutput, new MetaData(PerformanceVector.class)));
 		getTransformer().addRule(new GenerateNewMDRule(performanceOutput, PerformanceVector.class));
 		getTransformer().addPassThroughRule(exampleSetInput, exampleSetOutput);
+		getTransformer().addGenerationRule(rocExampleSet, ExampleSet.class);
+		List<PerformanceCriterion> criteria = getCriteria();
+        for (PerformanceCriterion criterion : criteria) {
+            addPerformanceValue(criterion.getName(), criterion.getDescription());
+        }
+		
+		addValue(new ValueDouble("performance", "The last performance (main criterion).") {
+	            @Override
+	            public double getDoubleValue() {
+	                if (currentPerformanceVector != null)
+	                    return currentPerformanceVector.getMainCriterion().getAverage();
+	                else
+	                    return Double.NaN;
+	            }
+	        });
+		
 	}
 
 	@Override
 	public void doWork() throws OperatorException {
-		PerformanceVector performance = performanceInput.getDataOrNull(PerformanceVector.class);
-		if (performance == null) {            
-			performance = new PerformanceVector();
+		currentPerformanceVector = performanceInput.getDataOrNull(PerformanceVector.class);
+		if (currentPerformanceVector == null) {            
+			currentPerformanceVector = new PerformanceVector();
 		}
 		
 		PerformanceCriterion perCrit;
@@ -120,8 +165,8 @@ public class ROCOperator extends Operator {
 		ExampleSet a = (ExampleSet) ExampleSetFactory.createExampleSet(auc_, labels2);
 		
 		perCrit = new ROCPerformanceVector("AUC", auc);
-		performance.addCriterion(perCrit);
-		performance.setMainCriterionName("AUC");
+		currentPerformanceVector.addCriterion(perCrit);
+		currentPerformanceVector.setMainCriterionName("AUC");
 		
 		Attribute pediction;
 		int i;
@@ -143,10 +188,10 @@ public class ROCOperator extends Operator {
 		test.startCounting(exampleSet, false);
 		for (Example e : exampleSet)
 			test.countExample(e);
-		performance.addCriterion(test);
+		currentPerformanceVector.addCriterion(test);
 		
 		exampleSetOutput.deliver(exampleSet);
-		performanceOutput.deliver(performance);
+		performanceOutput.deliver(currentPerformanceVector);
 		aucOutput.deliver(a);
 	}
 

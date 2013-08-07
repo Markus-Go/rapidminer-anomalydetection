@@ -74,6 +74,14 @@
 				</class>
 			</operator>
 		</group>
+<group key ="kernel_based" >
+			<operator>
+				<key>One-Class LIBSVM Anomaly Score</key>
+				<class> 		de.dfki.madm.anomalydetection.operator.kernel_based.AnomalyDetectionLibSVMOperator
+				</class>
+			</operator>
+
+		</group>
 		
 		<group key ="performance" >
 			<operator>
