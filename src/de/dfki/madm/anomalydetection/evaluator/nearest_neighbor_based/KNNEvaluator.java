@@ -68,10 +68,6 @@ public class KNNEvaluator implements Evaluator {
 					knnCollection.updateNearestNeighbors(i, j, currentDistance);
 
 				}
-				setAnomalyScore(i, knnCollection.getNeighBorDistanceSoFar()[i],
-						knnCollection.getNeighBorIndiciesSoFar()[i],
-						knnCollection.getNumberOfNeighborsSoFar()[i]);
-
 			}
 			if (logger != null)
 				logger.logNote("Thread " + start + " " + end + " finished!");
@@ -205,7 +201,15 @@ public class KNNEvaluator implements Evaluator {
 
 		// barrier so that when all the threads are done the main thread
 		// continues.
-		CyclicBarrier barrier = new CyclicBarrier(numberOfThreads + 1);
+		CyclicBarrier barrier = new CyclicBarrier(numberOfThreads + 1,new Runnable() {
+		public void run() { 
+		    for(int i = 0; i<n;i++){
+			    setAnomalyScore(i, knnCollection.getNeighBorDistanceSoFar()[i],
+						    knnCollection.getNeighBorIndiciesSoFar()[i],
+						    knnCollection.getNumberOfNeighborsSoFar()[i]);
+		    }
+		  }
+		});
 
 		if (knnCollection.getPoints()[0].length < 32) {
 			// number of elements that each thread should handle
