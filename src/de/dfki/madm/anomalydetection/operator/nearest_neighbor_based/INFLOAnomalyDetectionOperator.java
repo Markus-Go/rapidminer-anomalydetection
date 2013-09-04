@@ -65,7 +65,7 @@ public class INFLOAnomalyDetectionOperator extends KNNAnomalyDetectionOperator {
 			if (k >= n) {
 				this.logWarning("Setting " + KNNAnomalyDetectionOperator.PARAMETER_K + " to #Datapoints-1.");
 				k = n-1;
-				this.setParameter(KNNAnomalyDetectionOperator.PARAMETER_K, (n-1)+"");
+				//this.setParameter(KNNAnomalyDetectionOperator.PARAMETER_K, (n-1)+"");
 			}
 			
 			boolean parallel = getParameterAsBoolean(PARAMETER_PARALLELIZE_EVALUATION_PROCESS);

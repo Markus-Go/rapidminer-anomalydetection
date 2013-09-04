@@ -104,7 +104,7 @@ public class LOCIAnomalyDetectionOperator extends
 			if (nmin == n) {
 				this.logWarning("Setting " + PARAMETER_N_MIN + " to #Datapoints-1 because n min can't be equal #Datapoints.");
 				nmin = n-1;
-				this.setParameter(PARAMETER_N_MIN, (n-1)+"");
+				//this.setParameter(PARAMETER_N_MIN, (n-1)+"");
 			}
 			
 			LOCIEvaluator evaluator = new LOCIEvaluator(measure, alpha, nmin,

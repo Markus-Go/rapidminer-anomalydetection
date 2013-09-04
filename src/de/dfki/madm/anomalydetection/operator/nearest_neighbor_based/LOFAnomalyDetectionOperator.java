@@ -88,12 +88,12 @@ public class LOFAnomalyDetectionOperator extends KNNAnomalyDetectionOperator {
 			if (maxK >= n) {
 				this.logWarning("Setting " + PARAMETER_MAXIMUM_K + " to "+ (n-1) + " because there cannot be more neighbors than data points.");
 				maxK = n-1;
-				this.setParameter(PARAMETER_MAXIMUM_K, maxK+"");
+				//this.setParameter(PARAMETER_MAXIMUM_K, maxK+"");
 			}
 			if (maxK < minK) {
 				this.logWarning("Setting " + PARAMETER_MINIMUM_K + " to "+ maxK + " to make UpperBound at least as large as LowerBound.");
 				minK = maxK;
-				this.setParameter(PARAMETER_MINIMUM_K, minK+"");
+				//this.setParameter(PARAMETER_MINIMUM_K, minK+"");
 			}
 			boolean parallel = getParameterAsBoolean(PARAMETER_PARALLELIZE_EVALUATION_PROCESS);
 			int numberOfThreads = getParameterAsInt(PARAMETER_NUMBER_OF_THREADS);
