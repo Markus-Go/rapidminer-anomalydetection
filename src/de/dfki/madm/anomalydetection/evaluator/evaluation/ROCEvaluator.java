@@ -57,7 +57,7 @@ public class ROCEvaluator {
 	public String getNormalClass() {
 		return this.normal;
 	}
-	
+	public Object[][] pre = null; //prediction / recall
 	/**
 	 * The returned array has 4 columns denoting: false positive rate, 
 	 * true positive rate/recall, precision and the decision threshold   
@@ -113,7 +113,7 @@ public class ROCEvaluator {
 			if (j != size - 1 && outliers[j].outlierScore == outliers[j + 1].outlierScore)
 				continue;
 			Area += last[1] * ((double)falsePositive - last[0]) + (double)0.5 * ((double)falsePositive - last[0]) * ((double)truePositive - last[1]);
-			rocPoints.add(new double[] { falsePositive, truePositive , truePositive*1.0/(positive+negative), outliers[j].outlierScore});
+			rocPoints.add(new double[] { falsePositive, truePositive , truePositive*1.0/(truePositive+falsePositive), outliers[j].outlierScore});
 			last[0] = falsePositive;
 			last[1] = truePositive;
 
@@ -127,13 +127,17 @@ public class ROCEvaluator {
 		double totalArea = (double)positive * (double)negative;
 
 		auc = Area / totalArea;
-		result = new Object[rocPoints.size()][4];
+		result = new Object[rocPoints.size()][2];
 		int i = 0;
+		pre = new Object[rocPoints.size()][2];
 		for (double[] r : rocPoints) {
 			result[i][0] = r[0] / negative;
-			result[i][1] = r[1] / positive;
-			result[i][2]= r[2];
-			result[i++][3]= r[3];
+			result[i++][1] = r[1] / positive;
+			}
+		i=0;
+		for(double[] r : rocPoints) {
+			pre[i][0] = r[2]; //precision = tp /(tp+fp)
+			pre[i++][1] = r[1] / positive; //recall = tp(so far) / all outlier
 		}
 
 		return result;

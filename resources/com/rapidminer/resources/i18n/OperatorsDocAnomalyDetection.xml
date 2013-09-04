@@ -209,6 +209,9 @@
 			guesses the two classes (normal or outlier), a ROC of 0.5 would be
 			the result on average. As input, this operator expects the outlier score
 			as well as the ground truth as labels.
+			Additionally the operator returns the precision and recall values for the whole input data.
+			The precision is calculated as true_positives/(true_positives+false_positives).
+			The recall is calculated as true_positives/(number of all outliers).
 			</p>
 		</help>
 	</operator>

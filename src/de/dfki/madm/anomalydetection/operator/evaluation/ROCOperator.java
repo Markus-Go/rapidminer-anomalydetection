@@ -55,6 +55,7 @@ public class ROCOperator extends Operator {
 	private OutputPort exampleSetOutput = getOutputPorts().createPort("example set");
 	private OutputPort rocExampleSet = getOutputPorts().createPort("roc set");
 	private OutputPort aucOutput = getOutputPorts().createPort("auc");
+	private OutputPort preOutput = getOutputPorts().createPort("pre");
 	
 	private InputPort performanceInput = getInputPorts().createPort("performance");
 	private OutputPort performanceOutput = getOutputPorts().createPort("performance");
@@ -156,9 +157,14 @@ public class ROCOperator extends Operator {
 		ROCEvaluator evaluator = new ROCEvaluator();
 		String outlierString = getParameterAsString(PARAMETER_LABEL);
 		ExampleSet roc = (ExampleSet) ExampleSetFactory.createExampleSet(evaluator.evaluate(outlierString, labels, outliers));
+		ExampleSet pre = (ExampleSet) ExampleSetFactory.createExampleSet(evaluator.pre);
 		String norm = evaluator.getNormalClass();
-
+		roc.getAttributes().get("att1").setName("true_positive_rate");
+		roc.getAttributes().get("att2").setName("false_positive_rate");
+		pre.getAttributes().get("att1").setName("precision");
+		pre.getAttributes().get("att2").setName("recall");
 		rocExampleSet.deliver(roc);
+		preOutput.deliver(pre);
 		auc = evaluator.auc;
 		Object[][] auc_ = { { auc } };
 		Object[] labels2 = { "AUC" };
