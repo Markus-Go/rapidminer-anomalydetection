@@ -25,7 +25,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Vector;
 
-import com.rapidminer.example.ExampleSet;
+import com.rapidminer.example.*;
 import com.rapidminer.operator.Operator;
 import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer.operator.OperatorException;
@@ -40,11 +40,14 @@ import com.rapidminer.parameter.MetaDataProvider;
 import com.rapidminer.parameter.ParameterType;
 import com.rapidminer.parameter.ParameterTypeAttribute;
 import com.rapidminer.parameter.ParameterTypeBoolean;
+import com.rapidminer.parameter.ParameterTypeCategory;
 import com.rapidminer.parameter.ParameterTypeList;
 import com.rapidminer.parameter.ParameterTypeString;
 import com.rapidminer.parameter.ParameterTypeStringCategory;
 import com.rapidminer.parameter.ParameterTypeTupel;
+import com.rapidminer.parameter.UndefinedParameterError;
 import com.rapidminer.parameter.conditions.BooleanParameterCondition;
+import com.rapidminer.parameter.conditions.EqualStringCondition;
 
 import de.dfki.madm.anomalydetection.evaluator.statistical_based.HistogramEvaluator;
 
@@ -64,13 +67,15 @@ import de.dfki.madm.anomalydetection.evaluator.statistical_based.HistogramEvalua
  * 
  * It is also possible to apply a logarithmic scaling to the score (log_scale).
  * 
- * @author Johann Gebhard, Markus Goldstein
+ * @author Johann Gebhardt, Markus Goldstein
  * 
  */
 public class HistogramOperator extends Operator {
 	
 	private static final String PARAMETER_LOG_SCALE = "use log scale (better precision)";
 	private static final String PARAMETER_PROPERTIES_LIST = "histogram properties";
+	private static String[] CONDITION_NAMES = new String[] { "all", "single"};
+	private static final String PARAMETER_FILTER_TYPE = "parameter mode";
 	private static final String PARAMETER_BIN_INFO ="bin_info";
 	private static final String PARAMETER_MODE="select mode";
 	private static final String PARAMETER_COLUMN_PROPERTIES = "column properties";
@@ -90,27 +95,59 @@ public class HistogramOperator extends Operator {
 	boolean defaultlist = false;
 	MetaDataChangeListener l = new MetaDataChangeListener() {
 		@Override
-		// fill properties list with initial default values
+		/* fill properties list with initial default values
+		 * if the currently used parameter list contains different attribute name 
+		 * than the current exampleSet input
+		 */
 		public void informMetaDataChanged(MetaData newMetadata) {
 			if(newMetadata != null){
-				if(!defaultlist){
-					if(newMetadata instanceof ExampleSetMetaData){
-						ExampleSetMetaData emd = (ExampleSetMetaData) newMetadata;
-						Vector<String> names = getRegularAttributeNames();
-						List<String[]> list =  new LinkedList<String[]>();
-						for (String name:names){
-							String[] map=new String[2];
-							map[0] = name;
-							if(emd.getAttributeByName(name).isNominal()) {
-								map[1] = "fixed binwidth.nominal";	
-							}
-							else {
-								map[1] = "fixed binwidth.-1";
-							}
-							list.add(map);
+				/* fetch the currently saved attribute names
+				 * 
+				 */
+				List<String[]> current_list = new LinkedList<String[]>();
+				try {
+					current_list = getParameterList(PARAMETER_PROPERTIES_LIST);
+				} catch (UndefinedParameterError e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				List<String> current_list_names = new LinkedList<String>();
+				for(String[] m :current_list) {
+					current_list_names.add(m[0]);
+				}
+				/* create the default list
+				 * 
+				 */
+				if(newMetadata instanceof ExampleSetMetaData){
+					ExampleSetMetaData emd = (ExampleSetMetaData) newMetadata;
+					Vector<String> names = getRegularAttributeNames();
+					List<String[]> list =  new LinkedList<String[]>();
+					for (String name:names){
+						String[] map=new String[2];
+						map[0] = name;
+						if(emd.getAttributeByName(name).isNominal()) {
+							map[1] = "fixed binwidth.nominal";	
 						}
+						else {
+							map[1] = "fixed binwidth.-1";
+						}
+						list.add(map);
+					}
+					/*
+					 * override the current list with the default names if the attributes differ
+					 */
+					boolean help = false;
+					for(String[] m :list) {
+						if(current_list_names.contains(m[0])){
+							continue;
+						}
+						else {
+							help = true;
+							break;
+						}
+					}
+					if(help) {
 						setParameter(PARAMETER_PROPERTIES_LIST,ParameterTypeList.transformList2String(list));
-						defaultlist = true;
 					}
 				}
 			}
@@ -119,7 +156,6 @@ public class HistogramOperator extends Operator {
 	
 	public HistogramOperator(OperatorDescription description) {
 		super(description);
-		
 		this.metaDataProvider = new MetaDataProvider() {
 			@Override
 			public MetaData getMetaData() {
@@ -137,7 +173,7 @@ public class HistogramOperator extends Operator {
 			public void removeMetaDataChangeListener(MetaDataChangeListener l) {
 				exampleSetInput.removeMetaDataChangeListener(l);
 				
-			}        	
+			}   	
 		};
 		this.metaDataProvider.addMetaDataChangeListener(l);
 	}
@@ -145,19 +181,35 @@ public class HistogramOperator extends Operator {
 	public void doWork() throws OperatorException {
 		 boolean log_scale = getParameterAsBoolean(PARAMETER_LOG_SCALE);
 		 boolean ranked = getParameterAsBoolean(PARAMETER_RANKED_MODE);
+		 String parameter_mode =getParameterAsString(PARAMETER_FILTER_TYPE);
+		 int bin_width = getParameterAsInt(PARAMETER_BIN_INFO);
+		 String mode2 = getParameterAsString(PARAMETER_MODE);
 		 ExampleSet exampleSet = exampleSetInput.getData(ExampleSet.class);
 	     List<String[]> list = getParameterList(PARAMETER_PROPERTIES_LIST);
 		 HashMap<String,Integer> bin_info = new HashMap<String,Integer>();
 		 HashMap<String,String> mode = new HashMap<String,String>();
-		 for(String[] m : list){
-			 String[] splitArray = m[1].split("(?<!\\\\)\\.");
-			 splitArray[1]= splitArray[1].replace("\\", ""); 
-			 mode.put(m[0], splitArray[0]);
-			 if(splitArray[1].equals("nominal")){
-				 bin_info.put(m[0],1);
+		 if(parameter_mode.equals("all")){
+			 for(Attribute att : exampleSet.getAttributes()) {
+				 mode.put(att.getName(),mode2);
+				 if(att.isNominal()){
+					 bin_info.put(att.getName(),1);
+				 }
+				 else {
+					 bin_info.put(att.getName(), bin_width);
+				 }
 			 }
-			 else  {
-				 bin_info.put(m[0],Integer.parseInt(splitArray[1]));
+		 }
+		 else{
+			 for(String[] m : list){
+				 String[] splitArray = m[1].split("(?<!\\\\)\\.");
+				 splitArray[1]= splitArray[1].replace("\\", ""); 
+				 mode.put(m[0], splitArray[0]);
+				 if(splitArray[1].equals("nominal")){
+					 bin_info.put(m[0],1);
+				 }
+				 else  {
+					 bin_info.put(m[0],Integer.parseInt(splitArray[1]));
+				 }
 			 }
 		 }
 		HistogramEvaluator evaluator = new HistogramEvaluator(this);
@@ -169,20 +221,27 @@ public class HistogramOperator extends Operator {
 		String[] mode = new String[2];
 		mode[0] = "fixed binwidth";
 		mode[1] = "dynamic binwidth";
-		ParameterTypeString type_int= new ParameterTypeString(PARAMETER_BIN_INFO,"Specifies how many bins or how many values per bins are used. Set to -1 for default value (sqrt(N)).");
-		ParameterTypeStringCategory type_category  = new ParameterTypeStringCategory(PARAMETER_MODE,"Select dynamic or fixed binwidth mode",mode);
+		ParameterTypeString type_int= new ParameterTypeString(PARAMETER_BIN_INFO,"Specifies how many bins or how many values per bins are used. Set to -1 for default value (sqrt(N)).","-1");
+		ParameterTypeStringCategory type_category  = new ParameterTypeStringCategory(PARAMETER_MODE,"Select dynamic or fixed binwidth mode",mode,"fixed binwidth");
 		type_category.setEditable(false);
 		ParameterTypeList typeList = new ParameterTypeList(PARAMETER_PROPERTIES_LIST, "properties for every column - select mode and number of bins/number of values per bin for every column (set binwidth to -1 for default value or to nominal for categorical data)",
 				new ParameterTypeAttribute(PARAMETER_ATTRIBUTE_NAME, "The index of the column whose properties should be changed.",getExampleSetInputPort()),
 				new ParameterTypeTupel(PARAMETER_COLUMN_PROPERTIES, "properties", 
 						 									type_category,
 						 									type_int));
-				
-		 types.add(typeList);
-		 types.add(new ParameterTypeBoolean(PARAMETER_RANKED_MODE,"rank bins and use the rank of a bin as its score",false,false));
-		 ParameterTypeBoolean type = new ParameterTypeBoolean(PARAMETER_LOG_SCALE,"set to true for a logarithmic scaled score",true,false);
-		 type.registerDependencyCondition(new BooleanParameterCondition(this, PARAMETER_RANKED_MODE, false, false));
-		 types.add(type);
+		ParameterType type2 = new ParameterTypeCategory(PARAMETER_FILTER_TYPE, "switch between setting the histogram properties for all columns at once or individual for every column", CONDITION_NAMES, 0);
+		type2.setExpert(false);
+		types.add(type2);	
+		typeList.registerDependencyCondition(new EqualStringCondition(this,PARAMETER_FILTER_TYPE,false,"single"));
+		types.add(typeList);
+		types.add(type_int);
+		type_int.registerDependencyCondition(new EqualStringCondition(this,PARAMETER_FILTER_TYPE,false,"all"));
+		types.add(type_category);
+		type_category.registerDependencyCondition(new EqualStringCondition(this,PARAMETER_FILTER_TYPE,false,"all"));
+		types.add(new ParameterTypeBoolean(PARAMETER_RANKED_MODE,"rank bins and use the rank of a bin as its score",false,false));
+		ParameterTypeBoolean type = new ParameterTypeBoolean(PARAMETER_LOG_SCALE,"set to true for a logarithmic scaled score",true,false);
+		type.registerDependencyCondition(new BooleanParameterCondition(this, PARAMETER_RANKED_MODE, false, false));
+		types.add(type);
 		 
 		return types;
 	}
@@ -195,12 +254,12 @@ public class HistogramOperator extends Operator {
 	public Vector<String> getRegularAttributeNames() {
         Vector<String> names = new Vector<String>();
         Vector<String> regularNames = new Vector<String>();
-
         MetaData metaData = getMetaData();
         if (metaData != null) {
             if (metaData instanceof ExampleSetMetaData) {
                 ExampleSetMetaData emd = (ExampleSetMetaData) metaData;
                 for (AttributeMetaData amd : emd.getAllAttributes()) {
+                	
                     if (true) {
                         if (amd.isSpecial())
                             names.add(amd.getName());
@@ -215,6 +274,7 @@ public class HistogramOperator extends Operator {
                     ExampleSetMetaData emd = mmd.getTrainingSetMetaData();
                     if (emd != null) {
                         for (AttributeMetaData amd : emd.getAllAttributes()) {
+                        	System.out.println("test");
                             if (true)
                                 if (amd.isSpecial())
                                     names.add(amd.getName());
