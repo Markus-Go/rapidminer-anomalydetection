@@ -32,9 +32,15 @@ import com.rapidminer.tools.math.similarity.DistanceMeasure;
 public class INFLOEvaluator extends KNNEvaluator {
 
 
+	private boolean newCollection;
 	public INFLOEvaluator(KNNCollection knnCollection,
 			DistanceMeasure measure, boolean parallel, int numberOfThreads, Operator logger) {
 		super(knnCollection, false, measure, parallel, numberOfThreads, logger);
+	}
+	public INFLOEvaluator(KNNCollection knnCollection,
+			DistanceMeasure measure, boolean parallel, int numberOfThreads, Operator logger,int n, int k , boolean newCollection) {
+		super(knnCollection, false, measure, parallel, numberOfThreads, logger,n,k,newCollection);
+		this.newCollection = newCollection;
 	}
 
 	public double [] evaluate() {

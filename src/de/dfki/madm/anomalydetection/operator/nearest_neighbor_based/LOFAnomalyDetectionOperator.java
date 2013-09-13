@@ -28,9 +28,11 @@ import com.rapidminer.parameter.ParameterTypeInt;
 import com.rapidminer.tools.math.similarity.DistanceMeasure;
 
 import de.dfki.madm.anomalydetection.evaluator.nearest_neighbor_based.KNNCollection;
+import de.dfki.madm.anomalydetection.evaluator.nearest_neighbor_based.KNNCollectionModel;
 import de.dfki.madm.anomalydetection.evaluator.nearest_neighbor_based.LOFEvaluator;
 
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -98,11 +100,20 @@ public class LOFAnomalyDetectionOperator extends KNNAnomalyDetectionOperator {
 			boolean parallel = getParameterAsBoolean(PARAMETER_PARALLELIZE_EVALUATION_PROCESS);
 			int numberOfThreads = getParameterAsInt(PARAMETER_NUMBER_OF_THREADS);
 			
-			KNNCollection knnCollection = new KNNCollection(n, maxK, points, weight);
+			readModel(n,maxK,points,weight,measure);
+			//KNNCollection knnCollection = new KNNCollection(n, maxK, points, weight);
 			LOFEvaluator evaluator = new LOFEvaluator(minK, knnCollection, 
-					measure,parallel, numberOfThreads, this);
-	
+					measure,parallel, numberOfThreads, this, n,  maxK ,  newCollection);
 			ret = evaluator.evaluate();
+			if(newCollection) {
+				model = new KNNCollectionModel(exampleSet,knnCollection,measure);
+			}
+			else {
+				model = new KNNCollectionModel(exampleSet,modelInput.getData(KNNCollectionModel.class).get(),measure);
+			}
+			modelOutput.deliver(model);
+			knnCollection = null;
+			
 		}
 		return ret;
 	}

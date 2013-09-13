@@ -30,8 +30,10 @@ import com.rapidminer.parameter.ParameterTypeDouble;
 import com.rapidminer.tools.math.similarity.DistanceMeasure;
 
 import de.dfki.madm.anomalydetection.evaluator.nearest_neighbor_based.KNNCollection;
+import de.dfki.madm.anomalydetection.evaluator.nearest_neighbor_based.KNNCollectionModel;
 import de.dfki.madm.anomalydetection.evaluator.nearest_neighbor_based.LoOPEvaluator;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -88,13 +90,15 @@ public class LoOPAnomalyDetectionOperator extends KNNAnomalyDetectionOperator {
 			boolean parallel = getParameterAsBoolean(PARAMETER_PARALLELIZE_EVALUATION_PROCESS);
 			int numberOfThreads = getParameterAsInt(PARAMETER_NUMBER_OF_THREADS);
 	
-			KNNCollection knnCollection = new KNNCollection(n, k, points, weight);
+			readModel(n,k,points,weight,measure);
 			LoOPEvaluator evaluator = new LoOPEvaluator(knnCollection, 
-					measure, lamda,parallel, numberOfThreads, this);
+					measure, lamda,parallel, numberOfThreads, this,n,k,newCollection);
 			
 			ret = evaluator.evaluate();
+			model = new KNNCollectionModel(exampleSet,knnCollection,measure);
+			modelOutput.deliver(model);
+			knnCollection = null;
 		}
-		
 		return ret;
 	}
 

@@ -34,13 +34,22 @@ import com.rapidminer.tools.math.similarity.DistanceMeasure;
 public class LoOPEvaluator extends KNNEvaluator {
 
 	private double lambda;
-
+	private int n;
+	private int k;
+	private boolean newCollection;
 	public LoOPEvaluator(KNNCollection knnCollection,
 			DistanceMeasure measure, double lambda, boolean parallel, int numberOfThreads, Operator logger) {
 		super(knnCollection, false, measure, parallel, numberOfThreads, logger);
 		this.lambda = lambda;
 	}
-
+	public LoOPEvaluator(KNNCollection knnCollection,
+			DistanceMeasure measure, double lambda, boolean parallel, int numberOfThreads, Operator logger,int n , int k , boolean newCollection) {
+		super(knnCollection, false, measure, parallel, numberOfThreads, logger,n ,k, newCollection);
+		this.lambda = lambda;
+		this.n = n;
+		this.k = k;
+		this.newCollection = newCollection;
+	}
 	/** The method is overridden to avoid doing extra computation **/
 	@Override
 	protected void setAnomalyScore(int i, double[] neighBorDistanceSoFar,

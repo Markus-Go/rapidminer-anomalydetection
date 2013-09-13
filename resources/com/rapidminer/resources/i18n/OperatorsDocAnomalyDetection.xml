@@ -12,7 +12,16 @@
  			algorithm proposed by Ramaswamy et al (2000) by setting the 
  			corresponding parameter. The outlier score is calculated according 
  			to the measure type selected. The higher the outlier the more 
- 			anomalous the instance is.
+ 			anomalous the instance is. 
+ 			
+ 			The operator is also able to read and write a model containing the k
+			nearest neighbors set. Typically, 99% of the execution time is used to
+			compute the neighbors such that is a good idea to store the model, for
+			example, when looping over a parameter. The operator checks whether the
+			model and the ExampleSet fit together. The model can be used for any of
+			the nearest-neighbor based algorithms. The parameter k used to create
+			the model needs to be the same or larger as the parameter k specified in
+			the operator. Otherwise, the model is re-computed.
 			</p>
 		</help>	
 	</operator>
@@ -43,7 +52,16 @@
 			taken as the final LOF score. 
  
 			A normal instance has an outlier value of approximately 1, while 
-			outliers have values greater than 1. 			
+			outliers have values greater than 1. 	
+			
+			The operator is also able to read and write a model containing the k
+			nearest neighbors set. Typically, 99% of the execution time is used to
+			compute the neighbors such that is a good idea to store the model, for
+			example, when looping over a parameter. The operator checks whether the
+			model and the ExampleSet fit together. The model can be used for any of
+			the nearest-neighbor based algorithms. The parameter k used to create
+			the model needs to be the same or larger as the parameter k specified in
+			the operator. Otherwise, the model is re-computed.		
  			</p>
 		</help>
 	</operator>
@@ -61,6 +79,15 @@
 			comparisons. LoOP is also based on the nearest neighbors set. 
 			The definition of the k-distance used is the same as the one 
 			proposed by Breunig et al [1999; 2000] to handle duplicates.
+			
+			The operator is also able to read and write a model containing the k
+			nearest neighbors set. Typically, 99% of the execution time is used to
+			compute the neighbors such that is a good idea to store the model, for
+			example, when looping over a parameter. The operator checks whether the
+			model and the ExampleSet fit together. The model can be used for any of
+			the nearest-neighbor based algorithms. The parameter k used to create
+			the model needs to be the same or larger as the parameter k specified in
+			the operator. Otherwise, the model is re-computed.
  			</p>
 		</help>
 	</operator>
@@ -98,6 +125,15 @@
 			one proposed by Breunig et al [1999; 2000] to handle duplicates. The 
 			normal instances will have an outlier score of approximately 1, 
 			while outliers have a value greater than 1.  
+			
+			The operator is also able to read and write a model containing the k
+			nearest neighbors set. Typically, 99% of the execution time is used to
+			compute the neighbors such that is a good idea to store the model, for
+			example, when looping over a parameter. The operator checks whether the
+			model and the ExampleSet fit together. The model can be used for any of
+			the nearest-neighbor based algorithms. The parameter k used to create
+			the model needs to be the same or larger as the parameter k specified in
+			the operator. Otherwise, the model is re-computed.
 			</p>
 		</help>
 	</operator>
@@ -114,6 +150,15 @@
 			the one proposed by  Breunig et al [1999; 2000] to handle duplicates. 
 			The normal instances will have an outlier score of approximately 1, 
 			while outliers have a value greater than 1.
+			
+			The operator is also able to read and write a model containing the k
+			nearest neighbors set. Typically, 99% of the execution time is used to
+			compute the neighbors such that is a good idea to store the model, for
+			example, when looping over a parameter. The operator checks whether the
+			model and the ExampleSet fit together. The model can be used for any of
+			the nearest-neighbor based algorithms. The parameter k used to create
+			the model needs to be the same or larger as the parameter k specified in
+			the operator. Otherwise, the model is re-computed.
 			</p>
 		</help>
 	</operator>

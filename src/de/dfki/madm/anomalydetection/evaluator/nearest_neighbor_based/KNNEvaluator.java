@@ -62,11 +62,12 @@ public class KNNEvaluator implements Evaluator {
 				for (int j = 0; j < n; j++) {
 					if (i == j)
 						continue;
+					if(newCollection){
 					double currentDistance = measure.calculateDistance(
 							knnCollection.getPoints()[i], knnCollection
 									.getPoints()[j]);
 					knnCollection.updateNearestNeighbors(i, j, currentDistance);
-
+					}
 				}
 			}
 			if (logger != null)
@@ -107,8 +108,8 @@ public class KNNEvaluator implements Evaluator {
 			if (logger != null)
 				logger.logNote("Thread " + start + " " + end + " started!");
 			for (int i = start; i <= end; i++) {
-				for (int j = 0; j < i; j++) {
-
+				for (int j = 0; j <= i; j++) {
+					if(newCollection){
 					double currentDistance = measure.calculateDistance(
 							knnCollection.getPoints()[i], knnCollection
 									.getPoints()[j]);
@@ -119,6 +120,7 @@ public class KNNEvaluator implements Evaluator {
 					synchronized (locks[j]) {
 						knnCollection.updateNearestNeighbors(j, i,
 								currentDistance);
+					}
 					}
 				}
 
@@ -145,7 +147,7 @@ public class KNNEvaluator implements Evaluator {
 	private Operator logger;
 	protected boolean parallel;
 	protected int numberOfThreads;
-
+	boolean newCollection = false;
 	public KNNEvaluator(KNNCollection knnCollection, boolean kth,
 			DistanceMeasure measure, boolean parallel, int numberOfThreads, Operator logger) {
 		this.knnCollection = knnCollection;
@@ -157,6 +159,19 @@ public class KNNEvaluator implements Evaluator {
 		this.numberOfThreads = numberOfThreads;
 		this.logger = logger;
 		res = new double[n];
+	}
+	public KNNEvaluator(KNNCollection knnCollection, boolean kth,
+			DistanceMeasure measure, boolean parallel, int numberOfThreads, Operator logger,int n, int k,boolean newCollection) {
+		this.knnCollection = knnCollection;
+		this.measure = measure;
+		this.kth = kth;
+		this.n = knnCollection.getN();
+		this.k = knnCollection.getK();
+		this.parallel = parallel;
+		this.numberOfThreads = numberOfThreads;
+		this.logger = logger;
+		res = new double[n];
+		this.newCollection = newCollection;
 	}
 
 	/**
@@ -270,14 +285,14 @@ public class KNNEvaluator implements Evaluator {
 
 	private void KNNSeq() {
 		for (int i = 0; i < n; i++) {
-			for (int j = i + 1; j < n; j++) {
-
-				double currentDistance = measure.calculateDistance(
-						knnCollection.getPoints()[i],
-						knnCollection.getPoints()[j]);
-				knnCollection.updateNearestNeighbors(i, j, currentDistance);
-				knnCollection.updateNearestNeighbors(j, i, currentDistance);
-
+			for (int j = i + 1; j <n; j++) {
+				if(newCollection) {
+					double currentDistance = measure.calculateDistance(
+							knnCollection.getPoints()[i],
+							knnCollection.getPoints()[j]);
+					knnCollection.updateNearestNeighbors(i, j, currentDistance);
+					knnCollection.updateNearestNeighbors(j, i, currentDistance);
+				}
 			}
 			setAnomalyScore(i, knnCollection.getNeighBorDistanceSoFar()[i],
 					knnCollection.getNeighBorIndiciesSoFar()[i], knnCollection

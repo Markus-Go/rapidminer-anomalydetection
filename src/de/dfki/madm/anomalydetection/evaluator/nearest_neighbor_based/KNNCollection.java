@@ -19,6 +19,7 @@
  */
 package de.dfki.madm.anomalydetection.evaluator.nearest_neighbor_based;
 
+import java.io.Serializable;
 import java.util.LinkedList;
 
 /**
@@ -30,7 +31,12 @@ import java.util.LinkedList;
  * @author Mennatallah Amer
  * 
  */
-public class KNNCollection {
+public class KNNCollection implements Serializable {
+	/**
+	 *  Change this if the object changes
+	 */
+	private static final long serialVersionUID = 123456L;
+
 	/** The size of the data **/
 	int n;
 
@@ -215,5 +221,12 @@ public class KNNCollection {
 			}
 		}
 	}
-
+	public static KNNCollection clone(KNNCollection a){
+		KNNCollection ret = new KNNCollection(a.n,a.k,a.points,a.weight);
+		ret.neighborIndicies = a.neighborIndicies.clone();
+		ret.neighborDistances = a.neighborDistances.clone(); 
+		ret.numberOfNeighbors = a.numberOfNeighbors.clone();
+		ret.kdistNeighbors = a.kdistNeighbors.clone();
+			return ret;
+	}
 }

@@ -21,7 +21,9 @@ package de.dfki.madm.anomalydetection.evaluator.nearest_neighbor_based;
 
 import java.util.LinkedList;
 
+import com.rapidminer.example.ExampleSet;
 import com.rapidminer.operator.Operator;
+import com.rapidminer.operator.ports.OutputPort;
 import com.rapidminer.tools.math.similarity.DistanceMeasure;
 
 /**
@@ -31,14 +33,20 @@ import com.rapidminer.tools.math.similarity.DistanceMeasure;
  * 
  */
 public class LOFEvaluator extends KNNEvaluator {
-	
+	public KNNCollection savedCollection;
 	private int minK;
-
 	public LOFEvaluator(int minK, KNNCollection knnCollection,
 			DistanceMeasure measure, boolean parallel, int numberOfthreads, Operator logger) {
 		super(knnCollection, false, measure, parallel, numberOfthreads, logger);
 		this.minK = minK;
 
+	}public LOFEvaluator(int minK, KNNCollection knnCollection,
+			DistanceMeasure measure, boolean parallel, int numberOfthreads, Operator logger,int n , int k , boolean newCollection
+			) {
+		super(knnCollection, false, measure, parallel, numberOfthreads, logger,n,k,newCollection);
+		this.minK = minK;
+		this.newCollection = newCollection;
+		
 	}
 	/**
 	 * The method is overridden to avoid the extra unnecessary work done
@@ -52,6 +60,7 @@ public class LOFEvaluator extends KNNEvaluator {
 	@Override
 	public double[] evaluate() {
 		super.evaluate();
+	
 		double[] lof = lof(); 
 		return lof;
 	}
@@ -64,6 +73,7 @@ public class LOFEvaluator extends KNNEvaluator {
 		double[] lof = lof(); 
 		return lof;
 	}
+	
 	
 	private double [] lof(){
 		double [] lof = new double[getN()];

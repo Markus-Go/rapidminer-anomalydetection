@@ -19,12 +19,15 @@
  */
 package de.dfki.madm.anomalydetection.operator.nearest_neighbor_based;
 
+import java.util.Arrays;
 import java.util.List;
 
 import com.rapidminer.example.Attributes;
 import com.rapidminer.example.ExampleSet;
 import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer.operator.OperatorException;
+import com.rapidminer.operator.ports.InputPort;
+import com.rapidminer.operator.ports.OutputPort;
 import com.rapidminer.operator.ports.metadata.DistanceMeasurePrecondition;
 import com.rapidminer.parameter.ParameterType;
 import com.rapidminer.parameter.ParameterTypeBoolean;
@@ -35,6 +38,7 @@ import com.rapidminer.tools.math.similarity.DistanceMeasureHelper;
 import com.rapidminer.tools.math.similarity.DistanceMeasures;
 
 import de.dfki.madm.anomalydetection.evaluator.nearest_neighbor_based.KNNCollection;
+import de.dfki.madm.anomalydetection.evaluator.nearest_neighbor_based.KNNCollectionModel;
 import de.dfki.madm.anomalydetection.evaluator.nearest_neighbor_based.KNNEvaluator;
 
 /**
@@ -64,10 +68,14 @@ public class KNNAnomalyDetectionOperator extends
 	public static final String PARAMETER_NUMBER_OF_THREADS = "number of threads";
 	/** The parameter name for &quot; **/
 	public static final String PARAMETER_PARALLELIZE_EVALUATION_PROCESS = "parallelize evaluation process";
-	
+	public OutputPort modelOutput = getOutputPorts().createPort("model");
+	public InputPort modelInput = getInputPorts().createPort("model");
 	
 	private DistanceMeasureHelper measureHelper = new DistanceMeasureHelper(this);
-
+	protected KNNCollection knnCollection = null;
+	protected boolean newCollection = false;
+	protected KNNCollectionModel model = null;
+	
 	public KNNAnomalyDetectionOperator(OperatorDescription description) {
 		super(description);
 		getExampleSetInput().addPrecondition(
@@ -90,22 +98,52 @@ public class KNNAnomalyDetectionOperator extends
 			if (k >= n) {
 				this.logWarning("Setting " + KNNAnomalyDetectionOperator.PARAMETER_K + " to #Datapoints-1.");
 				k = n-1;
-				this.setParameter(KNNAnomalyDetectionOperator.PARAMETER_K, (n-1) + "");
+				//this.setParameter(KNNAnomalyDetectionOperator.PARAMETER_K, (n-1) + "");
 			}
-			
-			KNNCollection knnCollection = new KNNCollection(n, k, points, weight);
-	
-			KNNEvaluator evaluator = new KNNEvaluator(knnCollection, kth, measure, parallel, numberOfThreads, this);
+			readModel(n,k,points,weight,measure);
+			KNNEvaluator evaluator = new KNNEvaluator(knnCollection, kth, measure, parallel, numberOfThreads, this,n,k,newCollection);
 			ret = evaluator.evaluate();
+			model = new KNNCollectionModel(exampleSet,knnCollection,measure);
+			modelOutput.deliver(model);
+			knnCollection = null;
 		}
-		
 		return ret;
 	}
 
 	public DistanceMeasureHelper getMeasureHelper() {
 		return measureHelper;
 	}
-
+	public void readModel(int n, int k, double[][] points,int[] weight,DistanceMeasure measure) throws OperatorException {
+		if(modelInput.isConnected()){
+			KNNCollectionModel input;
+			input = modelInput.getData(KNNCollectionModel.class);
+			knnCollection = input.get();
+			newCollection = false;
+			if(k>knnCollection.getK() || !Arrays.deepEquals(knnCollection.getPoints(),points) ||!measure.getClass().toString().equals(input.measure.getClass().toString()) ){
+				if(k>knnCollection.getK()) {
+					this.logNote("Model at input port can not be used (k too small).");
+				}
+				else {
+					this.logNote("Model at input port can not be used (Model andExampleSet not matching).");
+				}
+				knnCollection = new KNNCollection(n, k, points, weight);
+				newCollection = true;
+				
+			}
+			else{
+				this.logNote(" Model at input port used for speeding up the operator.");
+			}
+			if(k<knnCollection.getK()){
+				knnCollection = KNNCollection.clone(knnCollection);
+				knnCollection.shrink(knnCollection.getK()-k);
+			}
+			}
+	else {
+		knnCollection = new KNNCollection(n, k, points, weight);
+		newCollection = true;
+	}
+		
+}
 	
 
 	@Override

@@ -28,7 +28,9 @@ import com.rapidminer.tools.math.similarity.DistanceMeasure;
 
 import de.dfki.madm.anomalydetection.evaluator.nearest_neighbor_based.INFLOEvaluator;
 import de.dfki.madm.anomalydetection.evaluator.nearest_neighbor_based.KNNCollection;
+import de.dfki.madm.anomalydetection.evaluator.nearest_neighbor_based.KNNCollectionModel;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -71,10 +73,13 @@ public class INFLOAnomalyDetectionOperator extends KNNAnomalyDetectionOperator {
 			boolean parallel = getParameterAsBoolean(PARAMETER_PARALLELIZE_EVALUATION_PROCESS);
 			int numberOfThreads = getParameterAsInt(PARAMETER_NUMBER_OF_THREADS);
 	
-			KNNCollection knnCollection = new KNNCollection(n, k, points, weight);
+			readModel(n,k,points,weight,measure);
 			INFLOEvaluator evaluator = new INFLOEvaluator(knnCollection, 
-					measure,parallel, numberOfThreads, this);
+					measure,parallel, numberOfThreads, this,n,k,newCollection);
 			ret = evaluator.evaluate();
+			model = new KNNCollectionModel(exampleSet,knnCollection,measure);
+			modelOutput.deliver(model);
+			knnCollection = null;
 		}
 		
 		return ret;

@@ -31,12 +31,20 @@ import com.rapidminer.tools.math.similarity.DistanceMeasure;
  * 
  */
 public class COFEvaluator extends KNNEvaluator {
-
+	private int n;
+	private int k;
+	private boolean newCollection;
 	public COFEvaluator(KNNCollection knnCollection, 
 			DistanceMeasure measure, boolean parallel, int numberOfThreads, Operator logger) {
 		super(knnCollection, false, measure, parallel, numberOfThreads, logger);
 	}
-
+	public COFEvaluator(KNNCollection knnCollection, 
+			DistanceMeasure measure, boolean parallel, int numberOfThreads, Operator logger,int n, int k,boolean newCollection) {
+		super(knnCollection, false, measure, parallel, numberOfThreads, logger, n, k , newCollection);
+		this.n = n;
+		this.k = k;
+		this.newCollection = newCollection;
+	}
 	/**
 	 * 
 	 * The methods implements the COF algorithm.
