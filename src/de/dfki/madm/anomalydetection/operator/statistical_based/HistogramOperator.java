@@ -76,7 +76,7 @@ public class HistogramOperator extends Operator {
 	private static final String PARAMETER_PROPERTIES_LIST = "histogram properties";
 	private static String[] CONDITION_NAMES = new String[] { "all", "single"};
 	private static final String PARAMETER_FILTER_TYPE = "parameter mode";
-	private static final String PARAMETER_BIN_INFO ="bin_info";
+	private static final String PARAMETER_BIN_INFO ="number of bins";
 	private static final String PARAMETER_MODE="select mode";
 	private static final String PARAMETER_COLUMN_PROPERTIES = "column properties";
 	private static final String PARAMETER_ATTRIBUTE_NAME = "attribute name";
@@ -221,10 +221,13 @@ public class HistogramOperator extends Operator {
 		String[] mode = new String[2];
 		mode[0] = "fixed binwidth";
 		mode[1] = "dynamic binwidth";
-		ParameterTypeString type_int= new ParameterTypeString(PARAMETER_BIN_INFO,"Specifies how many bins or how many values per bins are used. Set to -1 for default value (sqrt(N)).","-1");
+		ParameterTypeString type_int= new ParameterTypeString(PARAMETER_BIN_INFO,"Specifies the number of bins. " +
+				"When using static binwidth the binwidth is set to (range of values)/(number of bins)."+
+				"When using dynamic binwidth the minimum number of bins is set to (number of examples)/(number of bins)." +
+				"In this case it is possible that there are less bins than specified if some bins contain more than the minimum number of values. Set to -1 for default value (sqrt(N)).","-1");
 		ParameterTypeStringCategory type_category  = new ParameterTypeStringCategory(PARAMETER_MODE,"Select dynamic or fixed binwidth mode",mode,"fixed binwidth");
 		type_category.setEditable(false);
-		ParameterTypeList typeList = new ParameterTypeList(PARAMETER_PROPERTIES_LIST, "properties for every column - select mode and number of bins/number of values per bin for every column (set binwidth to -1 for default value or to nominal for categorical data)",
+		ParameterTypeList typeList = new ParameterTypeList(PARAMETER_PROPERTIES_LIST, "properties for every column - select mode and number of bins for every column (set binwidth to -1 for default value or to nominal for categorical data)",
 				new ParameterTypeAttribute(PARAMETER_ATTRIBUTE_NAME, "The index of the column whose properties should be changed.",getExampleSetInputPort()),
 				new ParameterTypeTupel(PARAMETER_COLUMN_PROPERTIES, "properties", 
 						 									type_category,

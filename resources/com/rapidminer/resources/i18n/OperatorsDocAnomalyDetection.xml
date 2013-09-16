@@ -289,11 +289,15 @@
 	  		column in the Example Set. There are two modes, one with a static 
 	  		and one with a dynamic bandwidth. In the static mode every bin has 
 	  		the same binwidth equally distributed over the value range. In the 
-	  		dynamic mode the bindwidth can vary, but you can specify a minimum 
-	  		number of examples contained in a bin. The default values for either
-	  		the number of bins or the minimum number of examples per bin is the 
-	  		square root of the number of total examples (column properties set 
-	  		to -1). To compute the outlier 
+	  		dynamic mode the binwidth can vary, but you can specify a minimum 
+	  		number of examples contained in a bin. The parameter number of bins sets 
+	  		the total number of bins used for either mode. The binwidth / minimum number
+	  		values per bin is then calculated automatically.
+	  		In the dynamic mode it is possible that there are less bins then specified if
+	 		some bins contain more than the minimum number of values.
+	  		The default values for 
+	  		the number of bins is the square root of the number of total examples 
+	  		(number of bins set to -1). To compute the outlier 
 	  		score, the histograms are normalized to one in height first. Then, 
 	  		the score is inverted, so that anomalies have a high score and 
 	  		normal examples a low score. It is also possible to apply a 

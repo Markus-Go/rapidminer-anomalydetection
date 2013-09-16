@@ -43,7 +43,8 @@ public class HistogramEvaluator {
 	public HistogramEvaluator(Operator logger) {
 		this.logger = logger;
 	}
-	
+	static int asdf = 0;
+	private ArrayList<HistogramBin>[] histogram;
 	@SuppressWarnings("unchecked")
 	public ExampleSet evaluate (ExampleSet exampleSet, boolean log_scale, boolean ranked, HashMap<String,Integer> bin_info_help, HashMap<String,String> mode_help) {
 	
@@ -87,7 +88,7 @@ public class HistogramEvaluator {
 		
 		// initialize histogram, one histogram for every dimension
 		// list of bins for every histogram
-		ArrayList<HistogramBin>[] histogram = new ArrayList[number_of_features];
+		histogram = new ArrayList[number_of_features];
 		for(int i = 0; i < number_of_features; i++) {
 			histogram[i] = new ArrayList<HistogramBin>();
 		}
@@ -118,13 +119,27 @@ public class HistogramEvaluator {
 		
 		// create histograms
 		for (int i = 0; i < number_of_features; i++) {
+			int last = 0;
+			double bin_start = data[0][i];
 			if(mode[i].equals("dynamic binwidth")){
 				// For nominal values every value gets its own bin. Rapidminer handels nominal values as intergers => binwidth 1
 				if (nominal[i]) {
-					createDynamicHistogram(histogram,data,0,1,i,true);
+					while(last<data.length-1){
+						last = createDynamicHistogram(histogram,data,last,1,i,true);
+					}
 				}
 				else {
-					createDynamicHistogram(histogram,data,0,bin_info[i],i,false);
+					int length = data.length;
+					int binwidth = bin_info[i];
+					while(last<data.length-1){
+						int values_per_bin = (int) Math.floor(data.length/bin_info[i]);
+						last = createDynamicHistogram(histogram,data,last,values_per_bin,i,false);
+						if(binwidth > 1) {
+						length = length - histogram[i].get(histogram[i].size()-1).get_quantity();
+						binwidth = binwidth -1;
+						values_per_bin = (int) Math.floor(length/binwidth);
+						}
+					}
 				}
 			}
 			else {
@@ -132,7 +147,10 @@ public class HistogramEvaluator {
 				if(nominal[i] || binwidth == 0) {
 					binwidth = 1.0;
 				}
-				createStaticHistogram(histogram,data,0,binwidth,i,data[0][i]);
+				while(last<data.length-1) {
+					last = createStaticHistogram(histogram,data,last,binwidth,i,bin_start);
+					bin_start = bin_start+binwidth;
+				}
 			}
 		}
 		
@@ -248,7 +266,9 @@ public class HistogramEvaluator {
 	 *  @param n
 	 *  @param row
 	 */
-	public static void createDynamicHistogram(ArrayList<HistogramBin>[] histogram_array, double[][] data, int first, int n, int feature, boolean nominal) {
+	
+	public static int createDynamicHistogram(ArrayList<HistogramBin>[] histogram_array, double[][] data, int first, int n, int feature, boolean nominal) {
+		
 		int last = first;
 		int end = 0;
 		// create new bin
@@ -327,9 +347,12 @@ public class HistogramEvaluator {
 		/*
 		 * if end of that file isn't reached start over with the last unused value as first value
 		 */
+		return last+1;
+		/*System.out.println(asdf);
 		if(last < data.length-1) {
+			asdf++;
 			createDynamicHistogram(histogram_array,data,last+1,n,feature,nominal);
-		}			
+		}*/			
 	}
 	/** Create histogram with static binWidth
 	 *  @param histogram_array
@@ -339,7 +362,7 @@ public class HistogramEvaluator {
 	 *  @param feature
 	 *  @param binStart
 	 */
-	public static void createStaticHistogram(ArrayList<HistogramBin>[] histogram_array, double[][] data, int first, double binWidth, int feature, double binStart){
+	public static int createStaticHistogram(ArrayList<HistogramBin>[] histogram_array, double[][] data, int first, double binWidth, int feature, double binStart){
 		HistogramBin bin = new HistogramBin(binStart,binStart+binWidth,0,0);
 		int last = first-1;
 		for(int i = first; i < data.length&&data[i][feature] <= bin.get_range_to(); i++) {
@@ -347,9 +370,10 @@ public class HistogramEvaluator {
 			last = i;
 		}
 		histogram_array[feature].add(bin);
-		if(last < data.length - 1) { 
+		return last+1;
+		/*if(last < data.length - 1) { 
 			createStaticHistogram(histogram_array,data,last+1,binWidth,feature,binStart+binWidth);
-		}
+		}*/
 	}
 	
 	/** Sort the rows of an multidimensional array independently.
