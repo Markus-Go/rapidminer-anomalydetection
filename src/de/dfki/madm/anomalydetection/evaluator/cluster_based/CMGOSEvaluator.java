@@ -90,10 +90,10 @@ public class CMGOSEvaluator implements Evaluator {
 
 	private RandomGenerator generator;
 	/**
-	 * Number of points to define a &quote;small cluster&quote;
-	 * Small clusters are removed.
+	 * Percentage determining if a cluster is large or small. 
+	 *
 	 */
-	private int minimumInstancesForCluster;
+	private double percentage;
 	/**
 	 * Lambda for regularization method
 	 */
@@ -106,7 +106,7 @@ public class CMGOSEvaluator implements Evaluator {
 	 * h
 	 */
 	private int h;
-	private int subsetPoints;
+	private int numberOfSubsets;
 	private int fastMCDPoints;
 	private int initIteration;
 	CovarianceMatrix[] CovariancematrixPerCluster;
@@ -141,7 +141,7 @@ public class CMGOSEvaluator implements Evaluator {
 	 * @param fastMCDPoints
 	 * @param subsetPoints
 	 */
-	public CMGOSEvaluator(DistanceMeasure measure, double[][] points, int[] belongsToCluster, double[][] centroids, int[] clusterSize, int threads, int removeRuns, double probability, int cov_sampling, RandomGenerator generator, int pointCountSmall, double lamda, int cov, int h, int subsetPoints, int fastMCDPoints, int initIteration) {
+	public CMGOSEvaluator(DistanceMeasure measure, double[][] points, int[] belongsToCluster, double[][] centroids, int[] clusterSize, int threads, int removeRuns, double probability, int cov_sampling, RandomGenerator generator, double percentage, double lamda, int cov, int h, int numberOfSubsets, int fastMCDPoints, int initIteration) {
 
 		this.measure = measure;
 		this.points = points;
@@ -153,11 +153,11 @@ public class CMGOSEvaluator implements Evaluator {
 		this.probability = probability;
 		this.cov_sampling = cov_sampling;
 		this.generator = generator;
-		this.minimumInstancesForCluster = pointCountSmall;
+		this.percentage = percentage;
 		this.regularizedLambda = lamda;
 		this.red = cov;
 		this.h = h;
-		this.subsetPoints = subsetPoints;
+		this.numberOfSubsets = numberOfSubsets;
 		this.fastMCDPoints = fastMCDPoints;
 		this.initIteration = initIteration;
 	}
@@ -213,18 +213,9 @@ public class CMGOSEvaluator implements Evaluator {
 	public double[] evaluate() throws OperatorException {
 		// remove small clusters
 		boolean[] removed_cluster = new boolean[this.centroids.length];
-		if (this.minimumInstancesForCluster != -2) {
-			double limit = 0.0;
-			// use formula (rule of thumb)
-			if (minimumInstancesForCluster == -1) {
-				limit = ((1 - this.probability) * this.points.length) / (this.clusterSize.length);
-			}
-			// use user-input
-			else {
-				limit = minimumInstancesForCluster;
-			}
-			removed_cluster = this.reassignPoints(removed_cluster, limit);
-		}
+		double limit = percentage * points.length/centroids.length;
+		removed_cluster = this.reassignPoints(removed_cluster, limit);
+	
 
 		int TotalNumberOfPoints = points.length;
 		int NumberOfCluster = this.centroids.length;
@@ -389,7 +380,7 @@ public class CMGOSEvaluator implements Evaluator {
 					id++;
 				}
 				if (!thereisone) {
-					throw new OperatorException("No cluster left. This is a problem. Try not to remove small clusters or reduce number");
+					throw new OperatorException("No cluster left. This is a problem. Try not to remove small clusters or reduce number of clusters.");
 				}
 				S = new double[CovariancematrixPerCluster[id].getCovMat().length][CovariancematrixPerCluster[id].getCovMat()[0].length];
 				for (int ClusterId = 0; ClusterId < NumberOfCluster; ClusterId++) {
@@ -656,8 +647,8 @@ public class CMGOSEvaluator implements Evaluator {
 				return this.retMap;
 			}
 
-			public void run() {
-				for (int id = (this.id * anz); id < ((this.id * anz) + anz); id++) {
+			public void run() { 
+				for (int id = (this.id * anz); id <= ((this.id * anz) + anz); id++) {
 					if (map2.containsKey(id)) {
 						HashMap<Double, LinkedList<CovarianceMatrix>> map = map2.get(id);
 						for (double d : map.keySet()) {
@@ -676,7 +667,7 @@ public class CMGOSEvaluator implements Evaluator {
 
 		// construct up to five disjoint random subsets of size nsub according
 		// to Section 3.3 (say, five subsets of size nsub = 300);
-		double anz_subset = Math.floor(data.length / this.subsetPoints);
+		double anz_subset = this.numberOfSubsets;
 		double anz_points = Math.floor(data.length / anz_subset);
 		boolean[] taken = new boolean[data.length];
 		int merge_id = 0;

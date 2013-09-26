@@ -78,8 +78,8 @@ public class CMGOSAnomalyDetectionOperator extends AbstractClusteringAnomalyDete
 	/**
 	 * 
 	 **/
-	public static final String PARAMETER_POINTS_SUBSET = "instances in a subset";
-	public static final String PARAMETER_POINTS_SUBSET_DESCRIPTION = "Defines the number of instances in a (random) subset used in fastMCD. Friedmann recommends to have at most 5 subsets, which menas this number should not be lower then (number of examples / 5).";
+	public static final String PARAMETER_NUMBER_OF_SUBSETS = "number of subsets";
+	public static final String PARAMETER_POINTS_SUBSET_DESCRIPTION = "Defines the number of subsets used in fastMCD. Friedmann recommends to have at most 5 subsets.";
 	/**
 	 * 
 	 **/
@@ -125,18 +125,10 @@ public class CMGOSAnomalyDetectionOperator extends AbstractClusteringAnomalyDete
 	public static final String PARAMETER_PARALLELIZE_EVALUATION_PROCESS = "parallelize evaluation process";
 	public static final String PARAMETER_PARALLELIZE_EVALUATION_PROCESS_DESCRIPTION = "Specifies that evaluation process should be performed in parallel";
 	/**
-	 * Boolean to remove small cluster
-	 */
-	public static final String PARAMETER_REMOVE_CLUSTER = "remove small clusters";
-	public static final String PARAMETER_REMOVE_CLUSTER_DESCRIPTION = "Too small clusters can negatively influence the result. If ticked, a rule of thumb is applied to remove clusters with less than ((1 - 'normal probability') * nbr of datapoints) / nbr of clusters. These points will be assigned to the nearest large cluster";
-	/**
-	 * Number of points to define a &quote;small cluster&quote;
-	 */
-	public static final String PARAMETER_NUMBER_POINTS_SMALL_CLUSTER = "minimum";
-	public static final String PARAMETER_NUMBER_POINTS_SMALL_CLUSTER_DESCRIPTION = "Minimum of instances in a cluster. Smaller clusters will be removed and instances assigned to the next large cluster.";
-	
-	public static final String PARAMETER_NUMBER_POINTS_MAN = "minimum number of instances";
-	public static final String PARAMETER_NUMBER_POINTS_MAN_DESCRIPTION = "Set the minimum number of points for a cluster manually.";
+	 * Parameter name for gamma &quot; ratio between the maximum size of small
+	 * clusters and the average cluster size &quot. Small clusters are removed.;
+	 **/
+	public static String PARAMETER_GAMMA = "gamma";
 
 	
 	public CMGOSAnomalyDetectionOperator(OperatorDescription description) {
@@ -151,13 +143,7 @@ public class CMGOSAnomalyDetectionOperator extends AbstractClusteringAnomalyDete
 		if (getParameterAsBoolean(PARAMETER_PARALLELIZE_EVALUATION_PROCESS))
 			parallel = getParameterAsInt(PARAMETER_NUMBER_OF_THREADS);
 
-		int rem_cluster_anz = -2;
-		if (getParameterAsBoolean(PARAMETER_REMOVE_CLUSTER))
-			if (getParameterAsBoolean(PARAMETER_NUMBER_POINTS_MAN))
-				rem_cluster_anz = getParameterAsInt(PARAMETER_NUMBER_POINTS_SMALL_CLUSTER);
-			else
-				rem_cluster_anz = -1;
-	
+		double percentage = getParameterAsDouble(PARAMETER_GAMMA);
 		
 		int[] belongsToCluster = getBelongsToCluster();
 		double[][] centroids = getCentriods();
@@ -169,7 +155,7 @@ public class CMGOSAnomalyDetectionOperator extends AbstractClusteringAnomalyDete
 			variancePoints = getParameterAsInt(PARAMETER_NUMBER_COVARIANCE_POINTS+"_");
 
 		RandomGenerator generator = RandomGenerator.getRandomGenerator(this);
-		CMGOSEvaluator evaluator = new CMGOSEvaluator(measure, points, belongsToCluster, centroids, clusterSize, parallel, getParameterAsInt(PARAMETER_NUMBER_OF_REMOVE), getParameterAsDouble(PARAMETER_OUTLIER_PROBABILITY), variancePoints, generator, rem_cluster_anz, getParameterAsDouble(PARAMETER_LAMBDA), getParameterAsInt(PARAMETER_COVARIANCE), getParameterAsInt(PARAMETER_H), getParameterAsInt(PARAMETER_POINTS_SUBSET), getParameterAsInt(PARAMETER_FMCD), getParameterAsInt(PARAMETER_RUN));
+		CMGOSEvaluator evaluator = new CMGOSEvaluator(measure, points, belongsToCluster, centroids, clusterSize, parallel, getParameterAsInt(PARAMETER_NUMBER_OF_REMOVE), getParameterAsDouble(PARAMETER_OUTLIER_PROBABILITY), variancePoints, generator, percentage, getParameterAsDouble(PARAMETER_LAMBDA), getParameterAsInt(PARAMETER_COVARIANCE), getParameterAsInt(PARAMETER_H), getParameterAsInt(PARAMETER_NUMBER_OF_SUBSETS), getParameterAsInt(PARAMETER_FMCD), getParameterAsInt(PARAMETER_RUN));
 
 		double[] e = evaluator.evaluate();
 			return e;
@@ -180,15 +166,10 @@ public class CMGOSAnomalyDetectionOperator extends AbstractClusteringAnomalyDete
 		List<ParameterType> types = new LinkedList<ParameterType>();
 
 		types.add(new ParameterTypeDouble(PARAMETER_OUTLIER_PROBABILITY, PARAMETER_OUTLIER_PROBABILITY_DESCRIPTION, 0, 1.0, 0.975, false));
+		types.add(new ParameterTypeDouble(PARAMETER_GAMMA,"Ratio between the maximum size of small clusters and the average cluster size. Small" +
+				"clusters are removed.",
+				0, 1, 0.1));
 
-		types.add(new ParameterTypeBoolean(PARAMETER_REMOVE_CLUSTER, PARAMETER_REMOVE_CLUSTER_DESCRIPTION, false, false));
-		ParameterTypeBoolean type3 = (new ParameterTypeBoolean(PARAMETER_NUMBER_POINTS_MAN, PARAMETER_NUMBER_POINTS_MAN_DESCRIPTION, false, false));
-		type3.registerDependencyCondition(new BooleanParameterCondition(this, PARAMETER_REMOVE_CLUSTER, true, true));
-		types.add(type3);
-		
-		ParameterTypeInt type = (new ParameterTypeInt(PARAMETER_NUMBER_POINTS_SMALL_CLUSTER, PARAMETER_NUMBER_POINTS_SMALL_CLUSTER_DESCRIPTION, 0, Integer.MAX_VALUE, 0, false));
-		type.registerDependencyCondition(new BooleanParameterCondition(this, PARAMETER_NUMBER_POINTS_MAN, true, true));
-		types.add(type);
 
 		types.add(new ParameterTypeCategory(PARAMETER_COVARIANCE, PARAMETER_COVARIANCE_DESCRIPTION, COV, 0, false));
 		
@@ -196,10 +177,10 @@ public class CMGOSAnomalyDetectionOperator extends AbstractClusteringAnomalyDete
 		type2.registerDependencyCondition(new EqualTypeCondition(getParameterHandler(), PARAMETER_COVARIANCE, COV, false, METHOD_COV_REDUCTION, METHOD_COV_REGULARIZE));
 		types.add(type2);
 
-		type3 = (new ParameterTypeBoolean(PARAMETER_LIMIT_COVARIANCE_POINTS, PARAMETER_LIMIT_COVARIANCE_POINTS_DESCRIPTION, false, false));
+		ParameterTypeBoolean type3 = (new ParameterTypeBoolean(PARAMETER_LIMIT_COVARIANCE_POINTS, PARAMETER_LIMIT_COVARIANCE_POINTS_DESCRIPTION, false, false));
 		type3.registerDependencyCondition(new EqualTypeCondition(getParameterHandler(), PARAMETER_COVARIANCE, COV, false, 1));
 		types.add(type3);
-		type = (new ParameterTypeInt(PARAMETER_NUMBER_COVARIANCE_POINTS, PARAMETER_NUMBER_COVARIANCE_POINTS_DESCRIPTION, 1, Integer.MAX_VALUE, 1000, false));
+		ParameterTypeInt type = (new ParameterTypeInt(PARAMETER_NUMBER_COVARIANCE_POINTS, PARAMETER_NUMBER_COVARIANCE_POINTS_DESCRIPTION, 1, Integer.MAX_VALUE, 1000, false));
 		type.registerDependencyCondition(new BooleanParameterCondition(this, PARAMETER_LIMIT_COVARIANCE_POINTS, true, true));
 		types.add(type);
 		type3 = (new ParameterTypeBoolean(PARAMETER_LIMIT_COVARIANCE_POINTS+"_", PARAMETER_LIMIT_COVARIANCE_POINTS_DESCRIPTION, false, false));
@@ -217,7 +198,7 @@ public class CMGOSAnomalyDetectionOperator extends AbstractClusteringAnomalyDete
 		type = (new ParameterTypeInt(PARAMETER_FMCD, PARAMETER_FMCD_DESCRIPTION, 0, Integer.MAX_VALUE, 600, false));
 		type.registerDependencyCondition(new EqualTypeCondition(getParameterHandler(), PARAMETER_COVARIANCE, COV, false, METHOD_COV_MCD));
 		types.add(type);
-		type = (new ParameterTypeInt(PARAMETER_POINTS_SUBSET, PARAMETER_POINTS_SUBSET_DESCRIPTION, 0, Integer.MAX_VALUE, 300, false));
+		type = (new ParameterTypeInt(PARAMETER_NUMBER_OF_SUBSETS, PARAMETER_POINTS_SUBSET_DESCRIPTION, 0, Integer.MAX_VALUE, 5, false));
 		type.registerDependencyCondition(new EqualTypeCondition(getParameterHandler(), PARAMETER_COVARIANCE, COV, false, METHOD_COV_MCD));
 		types.add(type);
 		

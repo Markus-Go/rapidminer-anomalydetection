@@ -124,7 +124,7 @@ public class LDCOFEvaluator implements Evaluator {
 				distances[i] = measure.calculateDistance(
 						centroids[clusterIndex], points[i]);
 				summationDistances[clusterIndex] += distances[i];
-			} else {
+				} else {
 				// It is a small cluster
 				double MinDistance = Double.MAX_VALUE;
 
@@ -151,8 +151,14 @@ public class LDCOFEvaluator implements Evaluator {
 			summationDistances[i] /= clusterSize[i];
 
 		for (int i = 0; i < n; i++) {
-			result[i] = distances[i]
-					/ summationDistances[belongsToLargeCluster[i]];
+			if(summationDistances[belongsToLargeCluster[i]]== 0.0) {
+				result[i] = 0;
+			}
+			else {
+				result[i] = distances[i]
+						/ summationDistances[belongsToLargeCluster[i]];
+			}
+		
 		}
 
 		return result;
