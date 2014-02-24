@@ -26,7 +26,8 @@ public class HistogramBin implements Comparable<HistogramBin> {
 	private int bin_num;
 	private double score; 
 	private double normalize;
-	
+	// The colors of the bins are saved as integers from 510 (green) to 0 (red)
+	private double color;
 	public HistogramBin(double from, double to,int quantity, int bin_num) {
 		this.range_from = from;
 		this.range_to = to;
@@ -49,7 +50,12 @@ public class HistogramBin implements Comparable<HistogramBin> {
 	public double get_normalize() {
 		return this.normalize;
 	}
-	
+	public double get_color() {
+		return this.color;
+	}
+	public void set_color(int color) {
+		this.color = color;
+	}
 	public double get_height() {
 		double width = (range_to - range_from);
 		double height = quantity / width;
@@ -106,10 +112,15 @@ public class HistogramBin implements Comparable<HistogramBin> {
 	/** Normalize the score.
 	 *  The "most normal bin" is set to 1. Every other bin is set relativ to that bin.
 	 *  After that all scores get inverted.
+	 *  Additionally the colors of the cells (when using the outlier data view) are 
+	 *  calculated. We differentiate between 510 colors.
+	 *  The most normal bins are green. All other bins are set relative to those bins and potentially
+	 *  can become everything between green - yellow - red. 
 	 * @param max_score
 	 */
 	public void normalize_score(double normal, double max_score, boolean log_scale) {
 		this.score = this.score * normal / max_score;
+		color = score * 510;
 		this.score = 1.0 / this.score;
 		if(log_scale) {
 			this.score = Math.log10(this.score);

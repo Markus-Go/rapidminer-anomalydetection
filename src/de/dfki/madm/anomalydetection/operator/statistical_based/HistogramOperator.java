@@ -71,7 +71,7 @@ import de.dfki.madm.anomalydetection.evaluator.statistical_based.HistogramEvalua
  * 
  */
 public class HistogramOperator extends Operator {
-	
+	private boolean  outlier_color;
 	private static final String PARAMETER_LOG_SCALE = "use log scale (better precision)";
 	private static final String PARAMETER_PROPERTIES_LIST = "histogram properties";
 	private static String[] CONDITION_NAMES = new String[] { "all", "single"};
@@ -92,6 +92,7 @@ public class HistogramOperator extends Operator {
 	 * output port
 	 */
 	private OutputPort exampleSetOutput = getOutputPorts().createPort("example set");
+	private OutputPort outlierExampleSetOutput = getOutputPorts().createPort("outlier example set");
 	boolean defaultlist = false;
 	MetaDataChangeListener l = new MetaDataChangeListener() {
 		@Override
@@ -179,6 +180,13 @@ public class HistogramOperator extends Operator {
 	}
 	
 	public void doWork() throws OperatorException {
+		// Only use color coded output if necessary to compute (speed)
+		 if(outlierExampleSetOutput.isConnected()) {
+			 outlier_color = true;
+		 }
+		 else {
+			 outlier_color = false;
+		 }
 		 boolean log_scale = getParameterAsBoolean(PARAMETER_LOG_SCALE);
 		 boolean ranked = getParameterAsBoolean(PARAMETER_RANKED_MODE);
 		 String parameter_mode =getParameterAsString(PARAMETER_FILTER_TYPE);
@@ -213,7 +221,13 @@ public class HistogramOperator extends Operator {
 			 }
 		 }
 		HistogramEvaluator evaluator = new HistogramEvaluator(this);
-		exampleSetOutput.deliver(evaluator.evaluate(exampleSet,log_scale,ranked,bin_info,mode));
+		ExampleSet eS = evaluator.evaluate(exampleSet,log_scale,ranked,bin_info,mode,outlier_color);
+		exampleSetOutput.deliver(eS);
+		if(outlier_color){
+			OutlierExampleSet oES = new OutlierExampleSet(eS,evaluator.colors);
+			outlierExampleSetOutput.deliver(oES);
+		}
+	
 	}
 
 	public List<ParameterType> getParameterTypes() {

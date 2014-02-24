@@ -310,6 +310,31 @@
 	 	</help>
 	</operator>
 <operator>
+		<name>Color Coded Join</name>
+		<synopsis> Creates color coded Outlier output </synopsis>
+		<help> <p>
+                        The main purpose of this operator is to preserve the color coding of
+                        the HBOS operator in the results perspective. If, for example, the 
+                        ExampleSet should be processed further after HBOS (e.g. Denormalized),
+                        this operator can be used to restore the color coding. Therefore, 
+                        this operator joins two ExampleSets. The first ExampleSet needs to have
+	  		the type OutlierExampleSet from the HBOS Operator.
+	  		The second ExampleSet should contain the same data values but can 
+	  		have a different type. The Operator will then try to 
+	  		match the colors from the OutlierExampleSet to the data values
+	  		from the ExampleSet to create a color coded output.
+	  		The ExampleSets need to have an ID Attribute, which has to have
+	  		the same name in both ExampleSets. Attributes that should be colored
+	  		need to have the same names in both ExampleSets.
+	  		The data values of the ExampleSets are not compared to each other
+	  		to allow data transformations. The user has to ensure that the IDs and 
+	  		attribute names refer to the same data values in both input example sets.
+	  		Attributes or examples that are only in the ExampleSet (not the
+	  		OutlierExampleSet) remain white.
+	  		</p>
+	 	</help>
+	</operator>
+<operator>
 		<name>One-Class LIBSVM Anomaly Score</name>
 		<synopsis>Computes the outlier score using one-class SVMs</synopsis>
 		<help> <p> 

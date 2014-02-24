@@ -39,14 +39,14 @@ import com.rapidminer.operator.Operator;
  */
 public class HistogramEvaluator {
 	private Operator logger;
-	
 	public HistogramEvaluator(Operator logger) {
 		this.logger = logger;
 	}
-	static int asdf = 0;
+	static int number_of_features; 
+	public HashMap<Integer,int[]> colors;
 	private ArrayList<HistogramBin>[] histogram;
 	@SuppressWarnings("unchecked")
-	public ExampleSet evaluate (ExampleSet exampleSet, boolean log_scale, boolean ranked, HashMap<String,Integer> bin_info_help, HashMap<String,String> mode_help) {
+	public ExampleSet evaluate (ExampleSet exampleSet, boolean log_scale, boolean ranked, HashMap<String,Integer> bin_info_help, HashMap<String,String> mode_help,boolean outlier_color) {
 	
 		if(ranked) {
 			log_scale = false;
@@ -59,7 +59,7 @@ public class HistogramEvaluator {
 		// Get number of atttributes
 		Attributes attributes = exampleSet.getAttributes();
 		
-		int number_of_features = bin_info_help.size();
+		number_of_features = bin_info_help.size();
 		
 		// match properties to the attributes 
 		int[] bin_info = new int[number_of_features];
@@ -83,6 +83,14 @@ public class HistogramEvaluator {
 		for(int i = 0; i < bin_info.length;i++){
 			if(bin_info[i] == -1.0) {
 				bin_info[i] = (int) Math.round(Math.sqrt(items));
+			}
+		}
+		// Initialize map to store colors if needed
+		// The columns are specified by the table index of their attribute
+		if(outlier_color) {
+			colors = new HashMap<Integer,int[]>();
+			for(Attribute att : attributes){
+				colors.put(att.getTableIndex(),new int[items]);
 			}
 		}
 		
@@ -143,13 +151,20 @@ public class HistogramEvaluator {
 				}
 			}
 			else {
-				double binwidth = (data[items-1][i] - data[0][i]) / bin_info[i];
+				int count_bins = 0;
+				double binwidth = (data[items-1][i]- data[0][i]) / bin_info[i];
 				if(nominal[i] || binwidth == 0) {
 					binwidth = 1.0;
 				}
-				while(last<data.length-1) {
-					last = createStaticHistogram(histogram,data,last,binwidth,i,bin_start);
+				while(last<data.length) {
+					if(count_bins == bin_info[i]-1) {
+						last = createStaticHistogram(histogram,data,last,binwidth,i,bin_start,true);
+					}
+					else {
+						last = createStaticHistogram(histogram,data,last,binwidth,i,bin_start,false);
+					}
 					bin_start = bin_start+binwidth;
+					count_bins++;
 				}
 			}
 		}
@@ -183,9 +198,12 @@ public class HistogramEvaluator {
 				tmp.get(x).normalize_score(normal,max_score[i],log_scale);
 			}
 		}
+	    
 		
 		/** Ranked modus. Sort histogram by score.
 		 *  Rank bins => new score
+		 *  also the color of the bins is set linearly 
+		 *  from green (rank 1) to red (max rank)
 		 */
 		if (ranked) {
 			for (int i = 0; i < histogram.length;i++) {
@@ -196,36 +214,36 @@ public class HistogramEvaluator {
 				int count = 1;
 				for(int x = 0; x < tmp.size();x++){
 					test[x].set_score(count);
+					test[x].set_color(102-(int)(x*102/(tmp.size()-1)));
 					count++;
 				}
 				tmp = new ArrayList<HistogramBin>(Arrays.asList(test));
 			}	
 		}
 		
-		/*	
-		 * // print some information about the histogram, only used to help with debugging
-		 * double[] test = new double[number_of_features];
-		 * count_attributes = 0;
-		 * for (String attr : bin_info_help.keySet()) {
-		 * 		ArrayList<HistogramBin> tmp = histogram[count_attributes];
-		 * 		System.out.println("Attribute " + attr);
-		 * 		for(int x = 0; x < tmp.size();x++) {
-		 * 			System.out.println("Range from: " +tmp.get(x).get_range_from() + "; Range to " + tmp.get(x).get_range_to() + "; Quantity "+ tmp.get(x).get_quantity() + ";score = "+ tmp.get(x).get_score() +"; Area = " + ((tmp.get(x).get_range_to() -tmp.get(x).get_range_from()))*tmp.get(x).get_height() );
-		 * 			test[count_attributes] = test[count_attributes] + ((tmp.get(x).get_range_to() -tmp.get(x).get_range_from()))*tmp.get(x).get_height();
-		 * 		}
-		 * 		count_attributes++;
-		 * 	}
-		 *	for(int i = 0; i < number_of_features;i++){
-		 *		System.out.println(test[i]);
-		 *	}
-		 */
-		
+			
+		  // print some information about the histogram, only used for debugging
+		  /*double[] test = new double[number_of_features];
+		  count_attributes = 0;
+		  for (String attr : bin_info_help.keySet()) {
+		  		ArrayList<HistogramBin> tmp = histogram[count_attributes];
+		  		System.out.println("Attribute " + attr + " " + count_attributes);
+		  		for(int x = 0; x < tmp.size();x++) {
+		  			System.out.println("Range from: " +tmp.get(x).get_range_from() + "; Range to " + tmp.get(x).get_range_to() + "; Quantity "+ tmp.get(x).get_quantity() + ";score = "+ tmp.get(x).get_score()+"; Color = "+tmp.get(x).get_color() +"; Area = " + ((tmp.get(x).get_range_to() -tmp.get(x).get_range_from()))*tmp.get(x).get_height() );
+		  			test[count_attributes] = test[count_attributes] + ((tmp.get(x).get_range_to() -tmp.get(x).get_range_from()))*tmp.get(x).get_height();
+		  		}
+		  		count_attributes++;
+		  	}
+		 	for(int i = 0; i < number_of_features;i++){
+		 		System.out.println(test[i]);
+		 	}
+		*/
 		double value = 0.0;
 		Attribute score = AttributeFactory.createAttribute("score",Ontology.REAL);
 		exampleSet.getExampleTable().addAttribute(score);
         exampleSet.getAttributes().setOutlier(score);
-        // int count_test = 1;
-		for (Example example : exampleSet) {
+        int count_examples = 0;
+        for (Example example : exampleSet) {
 			value = 1.0;
 			if(log_scale) {
 				value = 0.0;
@@ -236,19 +254,32 @@ public class HistogramEvaluator {
 			row = 0;
 			for (String att : bin_info_help.keySet()) {
 				Attribute a = attributes.get(att);
+				
+				// Get score and color
+				double[] tmp = get_score(histogram[row],example.getValue(a),row);
 				if(log_scale) {
-					value =  value +get_score(histogram[row],example.getValue(a));
+					value =  value +tmp[0];
+					if(outlier_color) {
+						colors.get(a.getTableIndex())[count_examples] = (int) tmp[1];
+					}
 					row++;
 				}
 				else if(ranked) {
-					value =  value +(get_score(histogram[row],example.getValue(a)));
+					value =  value +tmp[0];
+					if(outlier_color){
+						colors.get(a.getTableIndex())[count_examples] = (int) tmp[1];
+					}
 					row++;
 				}
 				else {
-					value =  value * get_score(histogram[row],example.getValue(a));
+					value =  value * tmp[0];
+					if(outlier_color) {
+						colors.get(a.getTableIndex())[count_examples] = (int) tmp[1];
+					}
 					row++;
 				}
 			}
+			count_examples++;
 			example.setValue(score,value);
 			// count_test++;
 		}  
@@ -348,11 +379,6 @@ public class HistogramEvaluator {
 		 * if end of that file isn't reached start over with the last unused value as first value
 		 */
 		return last+1;
-		/*System.out.println(asdf);
-		if(last < data.length-1) {
-			asdf++;
-			createDynamicHistogram(histogram_array,data,last+1,n,feature,nominal);
-		}*/			
 	}
 	/** Create histogram with static binWidth
 	 *  @param histogram_array
@@ -362,8 +388,12 @@ public class HistogramEvaluator {
 	 *  @param feature
 	 *  @param binStart
 	 */
-	public static int createStaticHistogram(ArrayList<HistogramBin>[] histogram_array, double[][] data, int first, double binWidth, int feature, double binStart){
+	public static int createStaticHistogram(ArrayList<HistogramBin>[] histogram_array, double[][] data, int first, double binWidth, int feature, double binStart,boolean last_bin){
 		HistogramBin bin = new HistogramBin(binStart,binStart+binWidth,0,0);
+		if(last_bin ){
+			bin = new HistogramBin(binStart,data[data.length-1][feature],0,0);
+			}
+		
 		int last = first-1;
 		for(int i = first; i < data.length&&data[i][feature] <= bin.get_range_to(); i++) {
 			bin.add_quantity(1);
@@ -396,31 +426,41 @@ public class HistogramEvaluator {
 		return data;
 	}
 	
-	/**	Returns to score of the bin in which a given value is.
+	/**	Returns the score and the color of the bin in which a given value is.
 	 * @param histogram
 	 * @param value
 	 * @return
 	 */
-	public static double get_score(ArrayList<HistogramBin> histogram, double value){
+	public static double[] get_score(ArrayList<HistogramBin> histogram, double value,int row){
 		double score = 0;
+		double color = 0;
+		double[] ret = new double[2];
 		for(int x = 0; x < histogram.size()-1;x++){
 			if(value >= histogram.get(x).get_range_from() && value < histogram.get(x).get_range_to()) {
 				score = histogram.get(x).get_score();
-				return score;
+				color = histogram.get(x).get_color();
+				ret[0] = score;
+				ret[1] = color;
+				return ret;
 			}
 		}
 		// "last" bin => different borders
 		int x = histogram.size()-1;
 		if(value >= histogram.get(x).get_range_from() && value <= histogram.get(x).get_range_to()) {
 			score = histogram.get(x).get_score();
-			return score;
+			color = histogram.get(x).get_color();
+			ret[0] = score;
+			ret[1] = color;
+			return ret;
 		}
-		return score;
+		ret[0] = score;
+		ret[1] = color;
+		return ret;
 	}
 	
 	/** Check if there are more than n points of a given value.
 	 * @param data
-	 * @param erstes_vorkommen
+	 * @param first_occurrence 
 	 * @param n
 	 * @param row
 	 * @return

@@ -1,4 +1,15 @@
 <ioobjects>
-
-
+	<ioobject 
+        	name="Outlier Data Table" 
+        	class="de.dfki.madm.anomalydetection.operator.statistical_based.OutlierExampleSet"
+        	reportable="true"
+        	icon="data.png">
+		<renderer>de.dfki.madm.anomalydetection.operator.statistical_based.OutlierExampleSetDataRenderer</renderer>
+        	<renderer>com.rapidminer.gui.renderer.data.ExampleSetDataRenderer</renderer>
+        	<renderer>com.rapidminer.gui.renderer.data.ExampleSetMetaDataRenderer</renderer>
+        	<renderer>com.rapidminer.gui.renderer.data.ExampleSetPlotRenderer</renderer>
+        	<renderer>com.rapidminer.gui.new_plotter.integration.ExpertDataTableRenderer</renderer>
+       	 	<renderer>com.rapidminer.gui.renderer.AnnotationsRenderer</renderer> 	
+	</ioobject>
 </ioobjects>
+

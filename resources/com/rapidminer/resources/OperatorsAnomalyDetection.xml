@@ -73,6 +73,11 @@
 				<class> 		de.dfki.madm.anomalydetection.operator.statistical_based.HistogramOperator
 				</class>
 			</operator>
+			<operator>
+                                <key>Color Coded Join</key>
+                                <class>                 de.dfki.madm.anomalydetection.operator.statistical_based.OutlierColorJoin
+                                </class>
+                        </operator>
 		</group>
 <group key ="kernel_based" >
 			<operator>
