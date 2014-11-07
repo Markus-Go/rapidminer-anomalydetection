@@ -309,7 +309,7 @@
 	  		</p>
 	 	</help>
 	</operator>
-<operator>
+	<operator>
 		<name>Color Coded Join</name>
 		<synopsis> Creates color coded Outlier output </synopsis>
 		<help> <p>
@@ -334,7 +334,25 @@
 	  		</p>
 	 	</help>
 	</operator>
-<operator>
+	<operator>
+		<name>Robust Principal Component Analysis Anomaly Score (rPCA)</name>
+		<synopsis> Computes an anomaly score based on a robust PCA estimation </synopsis>
+		<help> <p> Computes a robust PCA-based anomaly score. For robustness, trimming of the 
+		           original data set based on the Mahalanobis distance is performed first. Then,
+		           PCA is computed and a score is determined based on the top upper and/or lower PCs.
+		           This operator follows the papers "A Novel Anomaly Detection Scheme Based on 
+		           Principal Component Classifier" by Shyu et al (2003) and "Robust Methods for 
+		           Unsupervised PCA-based Anomaly Detection" by Kwitt et al. (2006). In contrast to
+		           the original publications, this operator computes a normalized score instead of 
+		           classifying into normal/anomalous instances.
+		           </p><p>
+		           Please be aware of the fact that this method can deal with "one big" cluster only and will
+		           probably fail if normal data consists of multiple clusters (non-linear dependencies) as
+		           well as on local anomaly detection tasks. 
+	  		</p>
+	 	</help>
+	</operator>
+	<operator>
 		<name>One-Class LIBSVM Anomaly Score</name>
 		<synopsis>Computes the outlier score using one-class SVMs</synopsis>
 		<help> <p> 

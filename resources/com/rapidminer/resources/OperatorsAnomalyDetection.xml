@@ -74,12 +74,17 @@
 				</class>
 			</operator>
 			<operator>
-                                <key>Color Coded Join</key>
-                                <class>                 de.dfki.madm.anomalydetection.operator.statistical_based.OutlierColorJoin
-                                </class>
-                        </operator>
+				<key>Color Coded Join</key>
+                <class>                 de.dfki.madm.anomalydetection.operator.statistical_based.OutlierColorJoin
+                </class>
+            </operator>
+            <operator>
+				<key>Robust Principal Component Analysis Anomaly Score (rPCA)</key>
+				<class> 		de.dfki.madm.anomalydetection.operator.statistical_based.RobustPCAOperator
+				</class>
+			</operator>
 		</group>
-<group key ="kernel_based" >
+		<group key ="kernel_based" >
 			<operator>
 				<key>One-Class LIBSVM Anomaly Score</key>
 				<class> 		de.dfki.madm.anomalydetection.operator.kernel_based.AnomalyDetectionLibSVMOperator
