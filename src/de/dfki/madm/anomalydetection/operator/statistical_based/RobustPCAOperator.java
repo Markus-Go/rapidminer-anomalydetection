@@ -73,6 +73,7 @@ import com.rapidminer.example.table.AttributeFactory;
  */
 public class RobustPCAOperator extends Operator {
 	public static final String PARAMETER_REDUCTION_TYPE = "component_usage";
+	public static final String PARAMETER_REDUCTION_TYPE_DESCRIPTION = "Select wich principal components should be used for anomaly score computation. Major PCs are typically preferred in literature.";
 	public static final String[] PCS_METHODS = new String[] {
 		"use all components",
 		"only use major components",
