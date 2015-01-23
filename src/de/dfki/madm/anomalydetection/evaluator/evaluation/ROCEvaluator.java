@@ -59,8 +59,8 @@ public class ROCEvaluator {
 	}
 	public Object[][] pre = null; //prediction / recall
 	/**
-	 * The returned array has 4 columns denoting: false positive rate, 
-	 * true positive rate/recall, precision and the decision threshold   
+	 * The returned array has 2 columns denoting: false positive rate,true positive rate 
+	 *  precision/recall will be stored in pre. (true positive rate==recall)
 	 */
 	public Object[][] evaluate(String outlierString, Object[] labels, double[] res) throws OperatorException {
 		int size = res.length;
@@ -136,7 +136,7 @@ public class ROCEvaluator {
 			}
 		i=0;
 		for(double[] r : rocPoints) {
-			pre[i][0] = r[2]; //precision = tp /(tp+fp)
+			pre[i][0] = r[2]; // precision = tp /(tp+fp)
 			pre[i++][1] = r[1] / positive; //recall = tp(so far) / all outlier
 		}
 

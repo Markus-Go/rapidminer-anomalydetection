@@ -159,8 +159,8 @@ public class ROCOperator extends Operator {
 		ExampleSet roc = (ExampleSet) ExampleSetFactory.createExampleSet(evaluator.evaluate(outlierString, labels, outliers));
 		ExampleSet pre = (ExampleSet) ExampleSetFactory.createExampleSet(evaluator.pre);
 		String norm = evaluator.getNormalClass();
-		roc.getAttributes().get("att1").setName("true_positive_rate");
-		roc.getAttributes().get("att2").setName("false_positive_rate");
+		roc.getAttributes().get("att1").setName("false_positive_rate");
+		roc.getAttributes().get("att2").setName("true_positive_rate");
 		pre.getAttributes().get("att1").setName("precision");
 		pre.getAttributes().get("att2").setName("recall");
 		rocExampleSet.deliver(roc);
