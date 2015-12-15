@@ -186,15 +186,17 @@ public class AnomalyDetectionLibSVMOperator extends
 
 		Evaluator evaluator = new AnomalyDetectionLibSVMEvaluator(points,
 				params, gammaTuning);
-		if (gammaTuning) {
-			logNote("Tuned Gamma Value " + params.gamma);
-		}
 
 		double[] result = evaluator.evaluate();
 		svm_model model = ((AnomalyDetectionLibSVMEvaluator) evaluator)
 				.getModel();
 		nSVValue.setNumberofSupportVectors(model.l);
 		nBSVValue.setNumberofSupportVectors(model.nBSV);
+		
+		if (gammaTuning) {
+			logNote("Tuned gamma value " + params.gamma);
+		}
+		
 		return result;
 	}
 
