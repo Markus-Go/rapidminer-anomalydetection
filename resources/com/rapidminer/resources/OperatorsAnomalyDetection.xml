@@ -92,6 +92,17 @@
 			</operator>
 
 		</group>
+
+		<group key="model_based">
+			<operator>
+				<key>Attribute-wise Learning (ALSO)</key>
+				<class>de.dfki.madm.anomalydetection.operator.model_based.ALSOOperator</class>
+			</operator>
+			<operator>
+				<key>Replicator Neural Network (RNN)</key>
+				<class>de.dfki.madm.anomalydetection.operator.model_based.RNNOperator</class>
+			</operator>
+		</group>
 		
 		<group key ="performance" >
 			<operator>

@@ -375,4 +375,53 @@
 		    </p>
 		</help>
 	</operator>	
+		<operator>
+		<name>Attribute-wise Learning (ALSO)</name>
+		<synopsis>Compute outlier scores based on regression models learned for each attribute.</synopsis>
+		<help><p>
+		This operator trains a single regression model for each regular attribute, trying
+		to predict it from the other attributes. These regression models are then used
+		to predict all attribute values for each instance, and measure the deviation
+		between the predicted value (which would be expected due to the hidden model
+		underlying the data) and the actual value. The Euclidean distance between the 
+		point made from the predicted values and the actual data point is used as an
+		outlier score. The operator can also output individual outlier scores per
+		attribute.   
+		</p>
+		<p>
+		To reduce the influence of useless attributes, the attributes are weighted by
+		the expected accuracy of the models for each attribute, reflected by the average 
+		root relative squared error of the learned models. The operator can also output
+		those weights.
+		</p>
+		<p>
+		In order to avoid effects due to overfitting, the operator is run in an X-fold cross-validation
+		like setting, where the majority of the data is used to train a model, which
+		is then applied to the remaining data points to predict the expected values. The number
+		of folds can be set.
+		</p>
+		<p>
+		For details see: Paulheim and Meusel: A Decomposition of the Outlier Detection
+		Problem into a Set of Supervised Learning Problems. Machine Learning Vol. 100(2-3), pp. 509-531 (2015).
+		</p>
+		</help>
+	</operator>
+	<operator>
+		<name>Replicator Neural Network (RNN)</name>
+		<synopsis>Trains a neural network to replicate the data (i.e., input and output of the
+		network should be identical). Outliers are determined by comparing the output to the
+		original instance, and measuring the difference.</synopsis>
+		<help>
+		<p>Trains a neural network to replicate the data (i.e., input and output of the
+		network should be identical). Outliers are determined by comparing the output to the
+		original instance, and measuring the difference.
+		</p>
+		<p>
+		The implementation follows the description in: Hawkins et al.: 
+		Outlier detection using replicator neural networks. In: 
+		Data Warehousing and Knowledge Discovery, pp. 170-180. Springer (2002) 
+		</p>
+		</help>
+	</operator>
+	
 </operatorHelp>
