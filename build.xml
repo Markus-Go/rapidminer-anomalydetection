@@ -1,7 +1,7 @@
 <project name="RapidMiner_Plugin_AnomalyDetection">
 	<description>Build file for the RapidMiner Anomaly Detection extension</description>
 
-	<property name="rm.dir" location="../../../workspace/RapidMiner_Unuk" />
+	<property name="rm.dir" location="../RapidMiner-Unuk" />
 		
 
 	<property name="build.build" location="build" />
@@ -44,5 +44,5 @@
 	<fileset id="build.dependentExtensions" dir="../../../workspace">
 	</fileset>
 
-	<import file="./build_extension.xml" />
+	<import file="${rm.dir}/build_extension.xml" />
 </project>
