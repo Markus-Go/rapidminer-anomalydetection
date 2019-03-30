@@ -42,5 +42,6 @@ Ahmed Elsawy
 
 This Software is supported by ...  
 [![http://madm.dfki.de/lib/tpl/dfki/images/logo.jpg](http://madm.dfki.de/lib/tpl/dfki/images/logo.jpg)](http://www.madm.eu/) 
-[![http://www.kyushu-u.ac.jp/img/common/header_logo.png](http://www.kyushu-u.ac.jp/img/common/header_logo.png)](http://www.kyushu-u.ac.jp/english/)
+[![http://www.kyushu-u.ac.jp/img/common_en/logo.png](http://www.kyushu-u.ac.jp/img/common_en/logo.png)](http://www.kyushu-u.ac.jp/english/)
+<a href="www.thu.de" target="_blank"><img src="https://studium.hs-ulm.de/_catalogs/masterpage/HSUlm/images/logo.svg" width="200"></a>
 [![https://www.goldiges.de/assets/images/logo-full.png](https://www.goldiges.de/assets/images/logo-full.png)](https://www.goldiges.de/)
