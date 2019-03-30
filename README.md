@@ -14,7 +14,7 @@ Some of the algorithms are:
   * Local Outlier Probability (LoOP)
   * Cluster-based Local Outlier Factor (CBLOF)
 
-More information and usage examples can be found on the <a target="_blank" href="https://www.goldiges.de/rapidminer-anomalydetection">author's homepage</a>
+More information and usage examples can be found on the <a target="_blank" href="https://www.goldiges.de/">author's homepage</a>
 
 Installation
 ------------
@@ -26,7 +26,7 @@ Copyright/ License/ Credits
 ---------------------------
 
 Copyright 2008-2013 Deutsches Forschungszentrum fuer Kuenstliche Intelligenz  
-Copyright 2008-2015 Markus Goldstein
+Copyright 2008-2019 Markus Goldstein
 
 This is free software. Licensed under the [GNU AGPL, Version 3](licenses/LICENSE).  
 There is NO WARRANTY, to the extent permitted by law.
