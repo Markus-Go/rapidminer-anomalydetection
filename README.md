@@ -1,4 +1,4 @@
-![http://madm.dfki.de/_media/rapidminer/ad-logo.png](http://madm.dfki.de/_media/rapidminer/ad-logo.png)
+[![](https://www.goldiges.de/assets/images/github/ad-logo.png)](#)
 
 RapidMiner Anomaly Detection Extension 
 ======================================
@@ -15,6 +15,10 @@ Some of the algorithms are:
   * Cluster-based Local Outlier Factor (CBLOF)
 
 More information and usage examples can be found on the <a target="_blank" href="https://www.goldiges.de/">author's homepage</a>
+
+Preamble
+--------
+This plugin was developed for the **Open Source version of RapidMiner**, which is still available <a target="_blank" href="https://marketplace.rapidminer.com/UpdateServer/faces/product_details.xhtml?productId=rapidminer">here</a>. Development was continued for the commercial version of Rapidminer Studio until version 9.7 by Martin Liebig in <a target="_blank" href="https://github.com/MartinLiebig/rapidminer-anomalydetection">this fork</a>. After RapidMiner was bought and renamed to Altair RapidMiner and then later to Altair® AI Studio, I completely lost track and interest of whether it still works with this software.
 
 Installation
 ------------
@@ -41,7 +45,8 @@ Patrick Kalka
 Ahmed Elsawy  
 
 This Software is supported by ...  
-[![http://madm.dfki.de/lib/tpl/dfki/images/logo.jpg](http://madm.dfki.de/lib/tpl/dfki/images/logo.jpg)](http://www.madm.eu/) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+<a href="http://www.dfki.de/" target="_blank"><img src="https://upload.wikimedia.org/wikipedia/de/8/88/Deutsches_Forschungszentrum_f%C3%BCr_K%C3%BCnstliche_Intelligenz_logo.svg" height="80"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 <a href="http://www.kyushu-u.ac.jp/english/" target="_blank"><img src="http://www.kyushu-u.ac.jp/img/common_en/logo.png" height="80"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 <a href="http://www.thu.de" target="_blank"><img src="https://studium.hs-ulm.de/_catalogs/masterpage/HSUlm/images/logo.svg" height="80"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 [![https://www.goldiges.de/assets/images/logo-full.png](https://www.goldiges.de/assets/images/logo-full.png)](https://www.goldiges.de/)
